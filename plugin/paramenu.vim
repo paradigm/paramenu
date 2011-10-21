@@ -1,5 +1,10 @@
 function! ParaMenu()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get some information we may need to reset later
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let init_cmdheight = &cmdheight
+	let init_lazyredraw = &lazyredraw
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get relevant key lists/dicts
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	" get/set selection key list
@@ -21,15 +26,23 @@ function! ParaMenu()
 	else
 		let special_keys = ["\<esc>","\<space>"]
 	endif
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Generate test output
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	let output = ""
 	for line_num in range(0,&lines-3)
 		let output .= "\n" . string(line_num)
 	endfor
-	set nolazyredraw
-	set nomore
-	echo output
-	call getchar()
-	echo output
-	call getchar()
+	let &cmdheight=len(split(output,"\n"))
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Reset values we've tinkered with
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"while 1
+		call getchar()
+	"endwhile
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Reset values we've tinkered with
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let &cmdheight=init_cmdheight
+	let &lazyredraw=init_lazyredraw
 endfunction
-
