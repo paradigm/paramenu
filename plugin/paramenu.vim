@@ -43,6 +43,48 @@ function! ParaMenu()
 		let l:output .= "\n" . nr2char(line_num) . nr2char(line_num) . nr2char(line_num) . nr2char(line_num)
 	endfor
 	let l:original_output = l:output
+"	let l:items = 
+"	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+"	"  Prefix selection keys to output
+"	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+"	" determine input_length
+"	let l:input_length = 1
+"	while len(l:items) > float2nr(pow(len(l:selection_keys),l:input_length))
+"	    let l:input_length = l:input_length + 1
+"	endwhile
+"	" Set up a list of counters for each key entry.
+"	" This is an easy way to generate which keys go with which item for an
+"	" aribtrary number of possible item while minimizing the required number
+"	" of input keys.
+"	let l:key_counters = []
+"	for l:key in range(1,l:input_length)
+"		let l:key_counters = add(l:key_counters,0)
+"	endfor
+"	" determine input_length
+"	for line in split(a:output,"\n")
+"		if index(a:items,line_number) != -1
+"			let key_series = ""
+"			for key in key_counters
+"				let key_series = key_series . sel_list[key]
+"			endfor
+"			exec "normal! i" . key_series . " " . line . "\n"
+"			" increment key_counters for next loop
+"			let key_counters[len(key_counters)-1] = key_counters[len(key_counters)-1] + 1
+"			for index in range(len(key_counters)-1,0,-1)
+"				if key_counters[index] == len(sel_list)
+"					let key_counters[index] = 0
+"					let key_counters[index-1] = key_counters[index-1] + 1
+"				endif
+"			endfor
+"		else
+"			exec "normal! i" . repeat(" ",input_length+1) . line . "\n"
+"		endif
+"		" increment line_number
+"		let line_number = line_number + 1
+"	endfor
+
+
+
 	let l:first_line=0
 	let l:input=""
 	let l:search_pattern = "^^"
@@ -53,6 +95,9 @@ function! ParaMenu()
 		"set nolazyredraw
 		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
 			if l:line =~ l:search_pattern
+				echohl Search
+			else
+				echohl Normal
 			endif
 			echo l:line
 		endfor
