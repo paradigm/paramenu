@@ -1,5 +1,10 @@
 function! ParaMenu()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get some information we may need to reset later
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let init_cmdheight = &cmdheight
+	let init_lazyredraw = &lazyredraw
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get relevant key lists/dicts
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	" get/set selection key list
@@ -21,6 +26,9 @@ function! ParaMenu()
 	else
 		let l:special_keys = ["\<esc>","\<space>"]
 	endif
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Generate test output
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	let l:output = ""
 	for line_num in range(0,99)
 		let l:output .= "\n" . string(line_num)
@@ -55,5 +63,8 @@ function! ParaMenu()
 		endif
 		exe "set cmdheight=".l:initial_cmdheight
 	endwhile
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Reset values we've tinkered with
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	exe "set cmdheight=".l:initial_cmdheight
 endfunction
