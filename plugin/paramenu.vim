@@ -1,4 +1,3 @@
-
 function! ParaMenu()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get some information we may need to reset later
