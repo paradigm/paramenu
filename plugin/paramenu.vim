@@ -18,7 +18,7 @@ function! ParaMenu()
 	if exists("g:ParaMenuNavigationKeys")
 		let l:navigation_keys = g:ParaMenuNavigationKeys
 	else
-		let l:navigation_keys = {"\<c-y>": "ScrollUp", "\<c-e>": "ScrollDown", "\<c-f>": "PageDown", "\<c-b>": "PageUp", "\<c-d>": "HalfPageDown", "\<c-u>": "HalfPageUp", "/": "Search", "?": "BackwardSearch", "\<c-r>": "Filter", "\<c-n>": "SearchNext", "\<c-p>": "SearchPrevious", "\<c-l>": "ClearSearch"}
+		let l:navigation_keys = {"\<c-y>": "ScrollUp", "\<c-e>": "ScrollDown", "\<c-f>": "PageDown", "\<c-b>": "PageUp", "\<c-d>": "HalfPageDown", "\<c-u>": "HalfPageUp", "/": "Search", "?": "BackwardSearch", "\<c-r>": "Filter", "\<c-n>": "SearchNext", "\<c-p>": "SearchPrevious", "\<c-l>": "ClearSearch", "\<c-g>": "LastFirstLine"}
 	endif
 	" get/set navigation key dictionary
 	if exists("g:ParaMenuSpecialKeys")
@@ -70,6 +70,16 @@ function! ParaMenu()
 				let l:first_line += float2nr((&lines-2)/2)
 			elseif l:navigation_keys[l:input] == "HalfPageUp"
 				let l:first_line -= float2nr((&lines-2)/2)
+			elseif l:navigation_keys[l:input] == "LastLine"
+				let l:first_line = len(split(output,"\n"))-1
+			elseif l:navigation_keys[l:input] == "FirstLine"
+				let l:first_line = 0
+			elseif l:navigation_keys[l:input] == "LastFirstLine"
+				if l:first_line == len(split(output,"\n"))-1
+					let l:first_line = 0
+				else
+					let l:first_line = len(split(output,"\n"))-1
+				endif
 			elseif l:navigation_keys[l:input] == "Search"
 				let l:search_pattern = input("/")
 				let l:search_direction = 1
