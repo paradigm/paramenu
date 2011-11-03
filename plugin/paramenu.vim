@@ -85,8 +85,14 @@ function! ParaMenu()
 	"  Prefix selection keys to output
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	" determine input_length
+	let l:number_of_items = len(l:metadata)
+	for l:item in l:metadata
+		if l:item == "\""
+			let l:number_of_items -= 1
+		endif
+	endfor
 	let l:input_length = 1
-	while len(split(l:prefixless_output,"\n")) > float2nr(pow(len(l:selection_keys),l:input_length))
+	while l:number_of_items > float2nr(pow(len(l:selection_keys),l:input_length))
 	    let l:input_length = l:input_length + 1
 	endwhile
 	" Set up a list of counters for each key entry.
@@ -110,16 +116,16 @@ function! ParaMenu()
 			for l:key in l:key_counters
 				let key_series = key_series . selection_keys[key]
 			endfor
+			" increment key_counters for next loop
+			let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
+			for l:index in range(len(l:key_counters)-1,0,-1)
+				if l:key_counters[l:index] == len(selection_keys)
+					let l:key_counters[l:index] = 0
+					let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
+				endif
+			endfor
 		endif
 		let l:output .= "\n" . l:metadata[l:line_num] . key_series . " " . l:line
-		" increment key_counters for next loop
-		let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
-		for l:index in range(len(l:key_counters)-1,0,-1)
-			if l:key_counters[l:index] == len(selection_keys)
-				let l:key_counters[l:index] = 0
-				let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
-			endif
-		endfor
 		let l:line_num += 1
 	endfor
 	let l:first_line=0
