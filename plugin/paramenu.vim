@@ -219,7 +219,7 @@ function! ParaMenu()
 					call getchar()
 				endif
 			endif
-			if l:first_line > len(split(l:output,"\n"))
+			if l:first_line > len(split(l:output,"\n")) - 1
 				let l:first_line = len(split(l:output,"\n")) - 1
 			elseif l:first_line < 1
 				let first_line = 0
