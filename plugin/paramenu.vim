@@ -11,8 +11,8 @@ function! ParaMenu()
 	if exists("g:ParaMenuSelectionKeys")
 		let l:selection_keys = g:ParaMenuSelectionKeys
 	else
-		"let sel_list = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-		let l:selection_keys = ["a","b","c"]
+		let l:selection_keys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+		"let l:selection_keys = ["a","b","c"]
 	endif
 	" get/set navigation key dictionary
 	if exists("g:ParaMenuNavigationKeys")
@@ -30,76 +30,128 @@ function! ParaMenu()
 	"  Generate test output
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	let l:output = ""
-	for line_num in range(97,122)
-		let l:output .= "\n" . nr2char(line_num)
+	let l:metadata = []
+	for l:line_num in range(97,122)
+		let l:output .= "\n" . nr2char(l:line_num)
+		if nr2char(l:line_num) == "i"
+			let l:metadata += ["\""]
+		elseif nr2char(l:line_num) == "a"
+			let l:metadata += ["#"]
+		elseif nr2char(l:line_num) == "c"
+			let l:metadata += ["%"]
+		else
+			let l:metadata += [" "]
+		endif
 	endfor
-	for line_num in range(97,122)
-		let l:output .= "\n" . nr2char(line_num) . nr2char(line_num)
+	for l:line_num in range(97,122)
+		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num)
+		if nr2char(l:line_num) == "i"
+			let l:metadata += ["\""]
+		elseif nr2char(l:line_num) == "a"
+			let l:metadata += ["#"]
+		elseif nr2char(l:line_num) == "c"
+			let l:metadata += ["%"]
+		else
+			let l:metadata += [" "]
+		endif
 	endfor
-	for line_num in range(97,122)
-		let l:output .= "\n" . nr2char(line_num) . nr2char(line_num) . nr2char(line_num)
+	for l:line_num in range(97,122)
+		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num)
+		if nr2char(l:line_num) == "i"
+			let l:metadata += ["\""]
+		elseif nr2char(l:line_num) == "a"
+			let l:metadata += ["#"]
+		elseif nr2char(l:line_num) == "c"
+			let l:metadata += ["%"]
+		else
+			let l:metadata += [" "]
+		endif
 	endfor
-	for line_num in range(97,122)
-		let l:output .= "\n" . nr2char(line_num) . nr2char(line_num) . nr2char(line_num) . nr2char(line_num)
+	for l:line_num in range(97,122)
+		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num)
+		if nr2char(l:line_num) == "i"
+			let l:metadata += ["\""]
+		elseif nr2char(l:line_num) == "a"
+			let l:metadata += ["#"]
+		elseif nr2char(l:line_num) == "c"
+			let l:metadata += ["%"]
+		else
+			let l:metadata += [" "]
+		endif
 	endfor
 	let l:original_output = l:output
-"	let l:items = 
-"	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-"	"  Prefix selection keys to output
-"	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-"	" determine input_length
-"	let l:input_length = 1
-"	while len(l:items) > float2nr(pow(len(l:selection_keys),l:input_length))
-"	    let l:input_length = l:input_length + 1
-"	endwhile
-"	" Set up a list of counters for each key entry.
-"	" This is an easy way to generate which keys go with which item for an
-"	" aribtrary number of possible item while minimizing the required number
-"	" of input keys.
-"	let l:key_counters = []
-"	for l:key in range(1,l:input_length)
-"		let l:key_counters = add(l:key_counters,0)
-"	endfor
-"	" determine input_length
-"	for line in split(a:output,"\n")
-"		if index(a:items,line_number) != -1
-"			let key_series = ""
-"			for key in key_counters
-"				let key_series = key_series . sel_list[key]
-"			endfor
-"			exec "normal! i" . key_series . " " . line . "\n"
-"			" increment key_counters for next loop
-"			let key_counters[len(key_counters)-1] = key_counters[len(key_counters)-1] + 1
-"			for index in range(len(key_counters)-1,0,-1)
-"				if key_counters[index] == len(sel_list)
-"					let key_counters[index] = 0
-"					let key_counters[index-1] = key_counters[index-1] + 1
-"				endif
-"			endfor
-"		else
-"			exec "normal! i" . repeat(" ",input_length+1) . line . "\n"
-"		endif
-"		" increment line_number
-"		let line_number = line_number + 1
-"	endfor
-
-
-
+	let l:prefixless_output = l:output
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Prefix selection keys to output
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" determine input_length
+	let l:input_length = 1
+	while len(split(l:prefixless_output,"\n")) > float2nr(pow(len(l:selection_keys),l:input_length))
+	    let l:input_length = l:input_length + 1
+	endwhile
+	" Set up a list of counters for each key entry.
+	" This is an easy way to generate which keys go with which item for an
+	" aribtrary number of possible item while minimizing the required number
+	" of input keys.
+	let l:key_counters = []
+	for l:key in range(1,l:input_length)
+		let l:key_counters = add(l:key_counters,0)
+	endfor
+	" add key series to each line in output
+	let l:output = ""
+	let l:line_num = 0
+	for l:line in split(l:prefixless_output,"\n")
+		let l:key_series = ""
+		if l:metadata[l:line_num] == "\""
+			for l:key in l:key_counters
+				let key_series = key_series . " "
+			endfor
+		else
+			for l:key in l:key_counters
+				let key_series = key_series . selection_keys[key]
+			endfor
+		endif
+		let l:output .= "\n" . l:metadata[l:line_num] . key_series . " " . l:line
+		" increment key_counters for next loop
+		let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
+		for l:index in range(len(l:key_counters)-1,0,-1)
+			if l:key_counters[l:index] == len(selection_keys)
+				let l:key_counters[l:index] = 0
+				let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
+			endif
+		endfor
+		let l:line_num += 1
+	endfor
 	let l:first_line=0
 	let l:input=""
 	let l:search_pattern = "^^"
 	let l:search_direction = ""
+	let l:done = 0
+	let l:key_series = ""
 	exe "set cmdheight=".&lines
-	while l:input!=l:special_keys[0]
+	while l:done == 0
 		redraw!
 		"set nolazyredraw
 		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
-			if l:line =~ l:search_pattern
-				echohl Search
+			if l:line[0] == "\""
+				echohl Comment
+				echon l:line . "\n"
+			elseif l:line[0] == "#"
+				echohl Statement
+				echon l:line . "\n"
+			elseif l:line[0] == "%"
+				echohl MatchParen
+				echon l:line . "\n"
 			else
-				echohl Normal
-			endif
-			echo l:line
+				echohl Identifier
+				echon l:line[0: l:input_length]
+				if l:line[l:input_length+1:] =~ l:search_pattern
+					echohl Search
+				else
+					echohl Normal
+				endif
+				echon l:line[l:input_length+1:] . "\n"
+			end
 		endfor
 		let l:input=nr2char(getchar())
 		if has_key(l:navigation_keys,l:input)
@@ -146,7 +198,7 @@ function! ParaMenu()
 				let l:searched_lines = 0
 				for l:line in l:search_contents
 					let l:searched_lines += l:actual_search_direction
-					if l:line =~ l:search_pattern && l:search_success == 0
+					if l:line[l:input_length+1:] =~ l:search_pattern && l:search_success == 0
 						let l:search_success = 1
 						let l:first_line += l:searched_lines
 						if l:first_line > len(split(l:output,"\n")) - 1 || l:first_line < 0
@@ -167,6 +219,15 @@ function! ParaMenu()
 				let first_line = 0
 			endif
 		endif
+		if index(l:selection_keys,l:input) != -1
+			let l:key_series .= l:input
+		end
+		if len(l:key_series) == l:input_length
+			let l:done = 1
+		end
+		if index(l:special_keys,l:input) != -1
+			let l:done = 2
+		end
 	endwhile
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Reset values we've tinkered with
