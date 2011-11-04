@@ -193,6 +193,9 @@ function! ParaMenu()
 			elseif l:navigation_keys[l:input] == "ClearSearch"
 				let l:search_pattern = "^^"
 			elseif l:navigation_keys[l:input] == "Filter"
+				let l:output = l:original_output
+				let l:input_length = l:original_input_length
+				let l:map_keyseries_line = l:original_map_keyseries_line
 				let l:filter_pattern = input("Filter: ")
 				let l:new_output = ""
 				let l:new_map_keyseries_line = {}
