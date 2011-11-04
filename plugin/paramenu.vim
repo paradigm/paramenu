@@ -3,7 +3,6 @@ function! ParaMenu()
 	"  Get some information we may need to reset later
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	let l:initial_cmdheight = &cmdheight
-	let l:initial_lazyredraw = &lazyredraw
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get relevant key lists/dicts
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -137,7 +136,6 @@ function! ParaMenu()
 	exe "set cmdheight=".&lines
 	while l:done == 0
 		redraw!
-		"set nolazyredraw
 		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
 			if l:line[0] == "\""
 				echohl Comment
@@ -239,6 +237,5 @@ function! ParaMenu()
 	"  Reset values we've tinkered with
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	exe "set cmdheight=".l:initial_cmdheight
-	"exe "set lazyredraw=".l:initial_lazyredraw
 	redraw!
 endfunction
