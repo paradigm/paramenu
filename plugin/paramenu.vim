@@ -38,6 +38,8 @@ function! ParaMenu()
 			let l:metadata += ["#"]
 		elseif nr2char(l:line_num) == "c"
 			let l:metadata += ["%"]
+		elseif nr2char(l:line_num) == "m"
+			let l:metadata += ["^"]
 		else
 			let l:metadata += [" "]
 		endif
@@ -50,6 +52,8 @@ function! ParaMenu()
 			let l:metadata += ["#"]
 		elseif nr2char(l:line_num) == "c"
 			let l:metadata += ["%"]
+		elseif nr2char(l:line_num) == "m"
+			let l:metadata += ["^"]
 		else
 			let l:metadata += [" "]
 		endif
@@ -62,6 +66,8 @@ function! ParaMenu()
 			let l:metadata += ["#"]
 		elseif nr2char(l:line_num) == "c"
 			let l:metadata += ["%"]
+		elseif nr2char(l:line_num) == "m"
+			let l:metadata += ["^"]
 		else
 			let l:metadata += [" "]
 		endif
@@ -74,6 +80,8 @@ function! ParaMenu()
 			let l:metadata += ["#"]
 		elseif nr2char(l:line_num) == "c"
 			let l:metadata += ["%"]
+		elseif nr2char(l:line_num) == "m"
+			let l:metadata += ["^"]
 		else
 			let l:metadata += [" "]
 		endif
@@ -85,7 +93,7 @@ function! ParaMenu()
 	" determine input_length
 	let l:number_of_items = len(l:metadata)
 	for l:item in l:metadata
-		if l:item == "\""
+		if l:item == "\"" || l:item == "^"
 			let l:number_of_items -= 1
 		endif
 	endfor
@@ -108,7 +116,7 @@ function! ParaMenu()
 	let l:map_keyseries_line = {}
 	for l:line in split(l:prefixless_output,"\n")
 		let l:key_series = ""
-		if l:metadata[l:line_num] == "\""
+		if l:metadata[l:line_num] == "\"" || l:metadata[l:line_num] == "^"
 			for l:key in l:key_counters
 				let key_series = key_series . " "
 			endfor
@@ -153,6 +161,11 @@ function! ParaMenu()
 			elseif l:line[0] == "%"
 				echohl MatchParen
 				echon l:line . "\n"
+			elseif l:line[0] == "^"
+				echohl Comment
+				echon l:line[0]
+				echohl Normal
+				echon l:line[1:] ."\n"
 			else
 				echohl Identifier
 				echon l:line[0: l:input_length] . " "
@@ -214,7 +227,7 @@ function! ParaMenu()
 
 				let l:number_of_items = len(split(l:new_output,"\n"))
 				for l:item in range(0,len(split(l:new_output,"\n")))
-					if l:item == "\""
+					if l:item == "\"" || l:item == "^"
 						let l:number_of_items -= 1
 					endif
 				endfor
@@ -233,7 +246,7 @@ function! ParaMenu()
 				let l:map_keyseries_line = {}
 				for l:line in split(l:new_output,"\n")
 					let l:key_series = ""
-					if l:new_metadata[l:line_num] == "\""
+					if l:new_metadata[l:line_num] == "\"" || l:new_metadata[l:line_num] == "^"
 						for l:key in l:key_counters
 							let key_series = key_series . " "
 						endfor
