@@ -93,6 +93,7 @@ function! ParaMenu()
 	while l:number_of_items > float2nr(pow(len(l:selection_keys),l:input_length))
 	    let l:input_length = l:input_length + 1
 	endwhile
+	let l:original_input_length = input_length
 	" Set up a list of counters for each key entry.
 	" This is an easy way to generate which keys go with which item for an
 	" aribtrary number of possible item while minimizing the required number
@@ -253,6 +254,7 @@ function! ParaMenu()
 				let l:key_series = ""
 			elseif l:navigation_keys[l:input] == "ClearFilter"
 				let l:output = l:original_output
+				let l:input_length = l:original_input_length
 				let l:map_keyseries_line = l:original_map_keyseries_line
 			endif
 			" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
