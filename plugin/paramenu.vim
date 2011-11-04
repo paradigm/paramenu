@@ -23,7 +23,7 @@ function! ParaMenu()
 	if exists("g:ParaMenuSpecialKeys")
 		let l:special_keys = g:ParaMenuNavigationKeys
 	else
-		let l:special_keys = ["\<esc>","\<space>"]
+		let l:special_keys = ["\<esc>","\<space>","\<cr>"]
 	endif
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Generate test output
@@ -139,7 +139,10 @@ function! ParaMenu()
 	while l:done == 0
 		redraw!
 		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
-			if l:line[0] == "\""
+			if l:line[l:input_length+1:] =~ l:search_pattern
+				echohl Search
+				echon l:line . "\n"
+			elseif l:line[0] == "\""
 				echohl Comment
 				echon l:line . "\n"
 			elseif l:line[0] == "#"
@@ -151,11 +154,7 @@ function! ParaMenu()
 			else
 				echohl Identifier
 				echon l:line[0: l:input_length]
-				if l:line[l:input_length+1:] =~ l:search_pattern
-					echohl Search
-				else
-					echohl Normal
-				endif
+				echohl Normal
 				echon l:line[l:input_length+1:] . "\n"
 			end
 		endfor
