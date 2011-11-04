@@ -105,6 +105,7 @@ function! ParaMenu()
 	" add key series to each line in output
 	let l:output = ""
 	let l:line_num = 0
+	let l:map_keyseries_line = {}
 	for l:line in split(l:prefixless_output,"\n")
 		let l:key_series = ""
 		if l:metadata[l:line_num] == "\""
@@ -115,6 +116,7 @@ function! ParaMenu()
 			for l:key in l:key_counters
 				let key_series = key_series . selection_keys[key]
 			endfor
+			let l:map_keyseries_line = {key_series : line_num+1}
 			" increment key_counters for next loop
 			let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
 			for l:index in range(len(l:key_counters)-1,0,-1)
