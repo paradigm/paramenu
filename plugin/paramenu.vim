@@ -17,7 +17,7 @@ function! ParaMenu()
 	if exists("g:ParaMenuNavigationKeys")
 		let l:navigation_keys = g:ParaMenuNavigationKeys
 	else
-		let l:navigation_keys = {"\<c-y>": "ScrollUp", "\<c-e>": "ScrollDown", "\<c-f>": "PageDown", "\<c-b>": "PageUp", "\<c-d>": "HalfPageDown", "\<c-u>": "HalfPageUp", "/": "Search", "?": "BackwardSearch", "\<c-r>": "Filter", "\<c-n>": "SearchNext", "\<c-p>": "SearchPrevious", "\<c-l>": "ClearSearch", "\<c-g>": "LastFirstLine"}
+		let l:navigation_keys = {"\<c-y>": "ScrollUp", "\<c-e>": "ScrollDown", "\<c-f>": "PageDown", "\<c-b>": "PageUp", "\<c-d>": "HalfPageDown", "\<c-u>": "HalfPageUp", "/": "Search", "?": "BackwardSearch", "\<c-r>": "Filter", "\<c-t>": "ClearFilter", "\<c-n>": "SearchNext", "\<c-p>": "SearchPrevious", "\<c-l>": "ClearSearch", "\<c-g>": "LastFirstLine"}
 	endif
 	" get/set navigation key dictionary
 	if exists("g:ParaMenuSpecialKeys")
@@ -139,7 +139,7 @@ function! ParaMenu()
 	while l:done == 0
 		redraw!
 		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
-			if l:line[l:input_length+1:] =~ l:search_pattern
+			if l:line[l:input_length+2:] =~ l:search_pattern
 				echohl Search
 				echon l:line . "\n"
 			elseif l:line[0] == "\""
@@ -153,9 +153,9 @@ function! ParaMenu()
 				echon l:line . "\n"
 			else
 				echohl Identifier
-				echon l:line[0: l:input_length]
+				echon l:line[0: l:input_length] . " "
 				echohl Normal
-				echon l:line[l:input_length+1:] . "\n"
+				echon l:line[l:input_length+2:] . "\n"
 			end
 		endfor
 		let l:input=nr2char(getchar())
@@ -188,9 +188,60 @@ function! ParaMenu()
 			elseif l:navigation_keys[l:input] == "BackwardSearch"
 				let l:search_pattern = input("?")
 				let l:search_direction = -1
-			elseif l:navigation_keys[l:input] == "RegexFilter"
-				let l:filter_pattern = input("Filter:")
+			elseif l:navigation_keys[l:input] == "ClearSearch"
+				let l:search_pattern = "^^"
+			elseif l:navigation_keys[l:input] == "Filter"
+				let l:filter_pattern = input("Filter: ")
+				let l:new_output = ""
+				let l:new_map_keyseries_line = {}
+				let l:new_metadata = []
+				let l:line_num = 0
+				let l:new_line_num = 0
+				for l:line in split(l:output,"\n")
+					if l:line[l:input_length+2:] =~ l:filter_pattern
+						let l:new_output .= "\n" . l:line[l:input_length+2:]
+						let l:new_map_keyseries_line[l:new_line_num] = l:line_num+1
+						let l:new_metadata += [l:metadata[line_num]]
+						let l:new_line_num += 1
+					endif
+					let l:line_num += 1
+				endfor
+				let l:key_counters = []
+				for l:key in range(1,l:input_length)
+					let l:key_counters = add(l:key_counters,0)
+				endfor
+				" add key series to each line in output
+				let l:output = ""
+				let l:line_num = 0
+				let l:map_keyseries_line = {}
+				for l:line in split(l:new_output,"\n")
+					let l:key_series = ""
+					if l:new_metadata[l:line_num] == "\""
+						for l:key in l:key_counters
+							let key_series = key_series . " "
+						endfor
+					else
+						for l:key in l:key_counters
+							let key_series = key_series . selection_keys[key]
+						endfor
+						let l:map_keyseries_line[key_series]=new_map_keyseries_line[line_num]
+						" increment key_counters for next loop
+						let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
+						for l:index in range(len(l:key_counters)-1,0,-1)
+							if l:key_counters[l:index] == len(selection_keys)
+								let l:key_counters[l:index] = 0
+								let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
+							endif
+						endfor
+					endif
+					let l:output .= "\n" . l:new_metadata[l:line_num] . key_series . " " . l:line
+					let l:line_num += 1
+				endfor
+				let l:key_series = ""
 			endif
+			" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			"  Actual search stuffs
+			" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			if l:navigation_keys[l:input] == "SearchNext" || l:navigation_keys[l:input] == "SearchPrevious" || l:navigation_keys[l:input] == "Search" || l:navigation_keys[l:input] == "BackwardSearch"
 				if ((l:navigation_keys[l:input] == "SearchNext" || l:navigation_keys[l:input] == "Search") && l:search_direction == 1) || ((l:navigation_keys[l:input] == "SearchPrevious" || l:navigation_keys[l:input] == "BackwardSearch" ) && l:search_direction == -1)
 					let l:actual_search_direction = 1
@@ -203,7 +254,7 @@ function! ParaMenu()
 				let l:searched_lines = 0
 				for l:line in l:search_contents
 					let l:searched_lines += l:actual_search_direction
-					if l:line[l:input_length+1:] =~ l:search_pattern && l:search_success == 0
+					if l:line[l:input_length+2:] =~ l:search_pattern && l:search_success == 0
 						let l:search_success = 1
 						let l:first_line += l:searched_lines
 						if l:first_line > len(split(l:output,"\n")) - 1 || l:first_line < 0
