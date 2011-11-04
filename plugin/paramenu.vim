@@ -78,7 +78,6 @@ function! ParaMenu()
 			let l:metadata += [" "]
 		endif
 	endfor
-	let l:original_output = l:output
 	let l:prefixless_output = l:output
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Prefix selection keys to output
@@ -129,6 +128,8 @@ function! ParaMenu()
 		let l:output .= "\n" . l:metadata[l:line_num] . key_series . " " . l:line
 		let l:line_num += 1
 	endfor
+	let l:original_map_keyseries_line = l:map_keyseries_line
+	let l:original_output = l:output
 	let l:first_line=0
 	let l:input=""
 	let l:search_pattern = "^^"
@@ -238,6 +239,9 @@ function! ParaMenu()
 					let l:line_num += 1
 				endfor
 				let l:key_series = ""
+			elseif l:navigation_keys[l:input] == "ClearFilter"
+				let l:output = l:original_output
+				let l:map_keyseries_line = l:original_map_keyseries_line
 			endif
 			" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			"  Actual search stuffs
