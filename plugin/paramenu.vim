@@ -116,7 +116,7 @@ function! ParaMenu()
 			for l:key in l:key_counters
 				let key_series = key_series . selection_keys[key]
 			endfor
-			let l:map_keyseries_line = {key_series : line_num+1}
+			let l:map_keyseries_line[key_series]=line_num+1
 			" increment key_counters for next loop
 			let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
 			for l:index in range(len(l:key_counters)-1,0,-1)
@@ -240,4 +240,14 @@ function! ParaMenu()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	exe "set cmdheight=".l:initial_cmdheight
 	redraw!
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Return value
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if l:done == 2
+		return (index(l:special_keys,l:input)+1)*-1
+	endif
+	if l:done == 1 && has_key(l:map_keyseries_line,key_series)
+		return l:map_keyseries_line[key_series]
+	endif
+	return 0
 endfunction
