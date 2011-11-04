@@ -207,6 +207,18 @@ function! ParaMenu()
 					endif
 					let l:line_num += 1
 				endfor
+
+				let l:number_of_items = len(split(l:new_output,"\n"))
+				for l:item in range(0,len(split(l:new_output,"\n")))
+					if l:item == "\""
+						let l:number_of_items -= 1
+					endif
+				endfor
+				let l:input_length = 1
+				while l:number_of_items > float2nr(pow(len(l:selection_keys),l:input_length))
+					let l:input_length = l:input_length + 1
+				endwhile
+
 				let l:key_counters = []
 				for l:key in range(1,l:input_length)
 					let l:key_counters = add(l:key_counters,0)
