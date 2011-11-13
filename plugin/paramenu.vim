@@ -275,6 +275,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 				endif
 			elseif l:navigation_keys[l:input] == "Search"
 				" note we do more with Search farther down
+				echohl Normal
 				let l:search_pattern = input("/")
 				let l:search_direction = 1
 				" doubtful the user would ask to search for everything,
@@ -284,6 +285,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 				endif
 			elseif l:navigation_keys[l:input] == "BackwardSearch"
 				" note we do more with BackwardSearch farther down
+				echohl Normal
 				let l:search_pattern = input("?")
 				let l:search_direction = -1
 			elseif l:navigation_keys[l:input] == "ClearSearch"
@@ -291,6 +293,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 				let l:search_pattern = "^^"
 			elseif l:navigation_keys[l:input] == "Filter"
 				" request regex filter pattern
+				echohl Normal
 				let l:filter_pattern = input("Filter: ")
 				" prepare variables to hold temporary prefixless output,
 				" keyseriesmap, and metadata transition info
