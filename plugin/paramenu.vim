@@ -574,8 +574,16 @@ function! ParaBuffers()
 		elseif l:special_keys_map[l:input] == "UnlistBuffer" || l:special_keys_map[l:input] == "ForceUnlistBuffer"
 			" requesting to unlist twice means want to unlist current buffer
 			if l:unlist == 1
-				bd
-				return 0
+				if &hidden == 0 && getbufvar("%","&mod")
+					" cannot unlist modified buffer without 'hidden'
+					" warn user and abort
+					echohl WarningMsg
+					echo "Cannot unlist current, modified buffer with 'hidden' set to off.  See :h 'hidden'"
+					return 1
+				else
+					bd " unlist current buffer
+					return 0
+				endif
 			elseif l:unlist == 2
 				bd!
 				return 0
@@ -588,13 +596,29 @@ function! ParaBuffers()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if has_key(l:map_output_buffer_number,l:input)
 		if l:unlist == 0
-			" switch to buffer
-			exe "b " l:map_output_buffer_number[l:input]
-			return 0
+			if &hidden == 0 && getbufvar("%","&mod") && l:map_output_buffer_number[l:input] != bufnr("%")
+				" cannot switch away from modified buffer without 'hidden'
+				" warn user and abort
+				echohl WarningMsg
+				echo "Cannot switch away from current, modified buffer with 'hidden' set to off.  See :h 'hidden'"
+				return 1
+			else
+				" switch to buffer
+				exe "b " l:map_output_buffer_number[l:input]
+				return 0
+			endif
 		elseif l:unlist == 1
-			" unlist buffer
-			exe "bd " l:map_output_buffer_number[l:input]
-			return 0
+			if &hidden == 0 && getbufvar("%","&mod") && l:map_output_buffer_number[l:input] == bufnr("%")
+				" cannot unlist modified buffer without 'hidden'
+				" warn user and abort
+				echohl WarningMsg
+				echo "Cannot unlist current, modified buffer with 'hidden' set to off.  See :h 'hidden'"
+				return 1
+			else
+				" unlist buffer
+				exe "bd " l:map_output_buffer_number[l:input]
+				return 0
+			end
 		elseif l:unlist == 2
 			" force unlist buffer
 			exe "bd! " l:map_output_buffer_number[l:input]
