@@ -738,7 +738,11 @@ function! ParaTags()
 	if exists("g:ParaTagsTempDir")
 		let l:temporary_file_location = g:ParaTagsTempDir
 	else
-		let l:temporary_file_location = "/tmp"
+		if has("unix")
+			let l:temporary_file_location = "/tmp"
+		elseif has("win32")
+			let l:temporary_file_location = "%TEMP%"
+		end
 	endif
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
