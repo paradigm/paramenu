@@ -712,10 +712,10 @@ function! ParaTags()
 	"  Get/set specialkey-to-paratags-command mapping
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	" Need to know what to do with ParaMenu's special key results
-	if exists("g:ParaBuffersSpecialKeyMap")
-		let l:special_keys_map = g:ParaBuffersSpecialKeyMap
+	if exists("g:ParaBuffersTagsKeyMap")
+		let l:special_keys_map = g:ParaTagsSpecialKeyMap
 	else
-		let l:special_keys_map = {-1: "Abort", -2: "TagUnderCursor", -5: "TagUnderCursor", -6: "TagUnderCursor"}
+		let l:special_keys_map = {-1: "Abort", -2: "TagUnderCursor", -5: "TagUnderCursor"}
 	endif
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Initial Setup
