@@ -157,7 +157,7 @@ so:
 	let g:ParaMenuSelectionKeys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"]
 
 Note that if you try to use non-printable characters (such as <c-h>), the
-output will be messed up and there is no guarentee ParaMenu will function
+output will be messed up and there is no guarantee ParaMenu will function
 properly.
 
                                                       *ParaMenuNavigationKeys*
@@ -274,7 +274,7 @@ Name              Key Value       Key              Functionality
 Abort             -1              <esc>            Aborts ParaBuffers
 UnlistBuffer      -2              <space>          Unlists a buffer
 AlternateBuffer   -3              <cr>             Selects alternate buffer
-ForceUnlistBuffer -4              <tab>            Foce unlists a buffer
+ForceUnlistBuffer -4              <tab>            Force unlists a buffer
 
 To customize which special key value is paired with what functionality, set the
 variable g:ParaBuffersSpecialKeyMap as a dictionary pairing the special key
@@ -291,7 +291,7 @@ AlternateBuffer is given, ParaBuffers will switch you to the alternate buffer
 series for a buffer, that buffer is unlisted.  If UnlistBuffer is followed by
 UnlistBuffer (or ForceUnlistBuffer), the current buffer is unlisted.  If
 UnlistBuffer is followed by the alternate buffer, the alternate buffer is
-unlisted.  ForceUnlistBuffer acts like UnlistBuffer, excpet it forces the
+unlisted.  ForceUnlistBuffer acts like UnlistBuffer, except it forces the
 buffer to be unlisted even if it has been modified since last saved.
 
 ==============================================================================
@@ -372,7 +372,7 @@ Abort.  For example, to explicitly set the default:
 
 To set the key associated with the key value, see |ParaMenuNavigationKeys|.
 
-Entering Abort will abort ParaQuickFix without jumping to a a quickfix item.
+Entering Abort will abort ParaQuickFix without jumping to a quickfix item.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
