@@ -805,6 +805,12 @@ function! ParaTags()
 		echo "(Press any key to continue)"
 		call getchar()
 	endif
+	" Warn user no tags found and abort
+	if l:tag_list == ""
+		echohl WarningMsg
+		echo "No tags found, aborting"
+		return 1
+	endif
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Convert ctags to output/metadata
