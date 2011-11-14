@@ -438,7 +438,7 @@ endfunction
 " =====================================================================
 "  ParaBuffers
 " =====================================================================
-command ParaBuffers call ParaBuffers()
+command! ParaBuffers call ParaBuffers()
 function! ParaBuffers()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-parabuffer-command mapping
@@ -706,7 +706,7 @@ endfunction
 " ==============================================================================
 "  ParaTags
 " ==============================================================================
-command ParaTags call ParaTags()
+command! ParaTags call ParaTags()
 function! ParaTags()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-paratags-command mapping
@@ -756,7 +756,7 @@ function! ParaTags()
 			" if the user hasn't loaded the buffer yet, this won't work
 			if bufloaded(l:buffer_number)
 				" determine path for temporary file
-				let l:temporary_file = l:temporary_file_location . "/.paratags-" . getpid() . "-" . bufname(l:buffer_number)
+				let l:temporary_file = l:temporary_file_location . "/.paratags-" . getpid()
 				" ensure there isn't already a file there, could be a problem
 				if filereadable(l:temporary_file)
 					redraw
@@ -767,6 +767,13 @@ function! ParaTags()
 				exe "silent! bw! " . l:temporary_file
 				" write temporary file to disk
 				call writefile(getbufline(l:buffer_number,1,"$"),l:temporary_file)
+				" ensure tempfile was writen 
+				if !filereadable(l:temporary_file)
+					echohl WarningMsg
+					echo "Can not create \"" . l:temporary_file . "\", aborting."
+					return 1
+				endif
+				exe "silent! bw! " . l:temporary_file
 				" ensure tempfile isn't loaded anymore
 				exe "silent! bw! " . l:temporary_file
 				" get ctag's name for the given filetype
@@ -897,7 +904,7 @@ function! ParaTags()
 	return 1
 endfunction
 
-command ParaQuickFix call ParaQuickFix()
+command! ParaQuickFix call ParaQuickFix()
 function! ParaQuickFix()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-paraquickfix-command mapping
