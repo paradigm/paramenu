@@ -335,7 +335,8 @@ a tag for it can be found.
 ==============================================================================
 9. ParaQuickFix                                                 *paraquickfix*
 
-ParaTags is a script used as an alternate interface to the quickfix window, which uses ParaMenu as a user interface.  It can be run using
+ParaTags is a script used as an alternate interface to the quickfix window,
+which uses ParaMenu as a user interface.  It can be run using
 
 	:ParaQuickFix
 
