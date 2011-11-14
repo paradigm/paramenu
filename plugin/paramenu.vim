@@ -1,71 +1,6 @@
-command! TestParaMenu source /home/paradigm/.vim/bundle/paramenu/plugin/paramenu.vim | echo ParaMenu(TestOutput()[0], TestOutput()[1])
-
-function! TestOutput()
-	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	"  Generate test output
-	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	let l:output = ""
-	let l:metadata = []
-	for l:line_num in range(97,122)
-		let l:output .= "\n" . nr2char(l:line_num)
-		if nr2char(l:line_num) == "i"
-			let l:metadata += ["\""]
-		elseif nr2char(l:line_num) == "a"
-			let l:metadata += ["#"]
-		elseif nr2char(l:line_num) == "c"
-			let l:metadata += ["%"]
-		elseif nr2char(l:line_num) == "m"
-			let l:metadata += ["^"]
-		else
-			let l:metadata += [" "]
-		endif
-	endfor
-	for l:line_num in range(97,122)
-		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num)
-		if nr2char(l:line_num) == "i"
-			let l:metadata += ["\""]
-		elseif nr2char(l:line_num) == "a"
-			let l:metadata += ["#"]
-		elseif nr2char(l:line_num) == "c"
-			let l:metadata += ["%"]
-		elseif nr2char(l:line_num) == "m"
-			let l:metadata += ["^"]
-		else
-			let l:metadata += [" "]
-		endif
-	endfor
-	for l:line_num in range(97,122)
-		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num)
-		if nr2char(l:line_num) == "i"
-			let l:metadata += ["\""]
-		elseif nr2char(l:line_num) == "a"
-			let l:metadata += ["#"]
-		elseif nr2char(l:line_num) == "c"
-			let l:metadata += ["%"]
-		elseif nr2char(l:line_num) == "m"
-			let l:metadata += ["^"]
-		else
-			let l:metadata += [" "]
-		endif
-	endfor
-	for l:line_num in range(97,122)
-		let l:output .= "\n" . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num) . nr2char(l:line_num)
-		if nr2char(l:line_num) == "i"
-			let l:metadata += ["\""]
-		elseif nr2char(l:line_num) == "a"
-			let l:metadata += ["#"]
-		elseif nr2char(l:line_num) == "c"
-			let l:metadata += ["%"]
-		elseif nr2char(l:line_num) == "m"
-			let l:metadata += ["^"]
-		else
-			let l:metadata += [" "]
-		endif
-	endfor
-	return [l:output, l:metadata]
-endfunction
-
-
+" ==============================================================================
+"  ParaMenu
+" ==============================================================================
 function! ParaMenu(prefixless_output, original_metadata)
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Arguments
@@ -88,8 +23,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 	if exists("g:ParaMenuSelectionKeys")
 		let l:selection_keys = g:ParaMenuSelectionKeys
 	else
-		"let l:selection_keys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-		let l:selection_keys = ["a","b","c"]
+		let l:selection_keys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 	endif
 	" Get/Set navigation key dictionary
 	" These are the keys used to navigate the item list, without selecting
@@ -104,7 +38,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 	if exists("g:ParaMenuSpecialKeys")
 		let l:special_keys = g:ParaMenuNavigationKeys
 	else
-		let l:special_keys = ["\<esc>","\<space>","\<cr>"]
+		let l:special_keys = ["\<esc>","\<space>","\<cr>","\<tab>","*"]
 	endif
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -125,7 +59,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 	" number of selectable items <= number-of-selection-keys^input_length
 	let l:original_input_length = 1
 	while l:number_of_items > float2nr(pow(len(l:selection_keys),l:original_input_length))
-	    let l:original_input_length = l:original_input_length + 1
+		let l:original_input_length = l:original_input_length + 1
 	endwhile
 	" Set up a list of counters for each key entry.
 	" This is an easy way to generate which keys go with which item for an
@@ -216,30 +150,34 @@ function! ParaMenu(prefixless_output, original_metadata)
 			if l:line[l:input_length+2:] =~ l:search_pattern
 				echohl Search
 				echon l:line . "\n"
-			" highlight if line is comment
+				" highlight if line is comment
 			elseif l:line[0] == "\""
 				echohl Comment
 				echon l:line . "\n"
-			" highlight if current buffer
+				" highlight if current buffer
 			elseif l:line[0] == "#"
 				echohl Statement
 				echon l:line . "\n"
-			" highlight if alterate buffer
+				" highlight if alterate buffer
 			elseif l:line[0] == "%"
 				echohl MatchParen
 				echon l:line . "\n"
-			" highlight if line is continuation of previous item
+				" highlight if modified buffer
+			elseif l:line[0] == "+"
+				echohl WarningMsg
+				echon l:line[0:] ."\n"
+				" highlight if line is continuation of previous item
 			elseif l:line[0] == "^"
 				echohl Comment
 				echon l:line[0]
 				echohl Normal
 				echon l:line[1:] ."\n"
-			" highlight if warning needed
+				" highlight if warning needed
 			elseif l:line[0] == "!"
 				echohl WarningMsg
 				echon l:line[0:] ."\n"
 			else
-			" normal highlighting
+				" normal highlighting
 				echohl Identifier
 				echon l:line[0: l:input_length] . " "
 				echohl Normal
@@ -454,7 +392,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 			if l:first_line > len(split(l:output,"\n")) - 1
 				" make last line topmost viewable line
 				let l:first_line = len(split(l:output,"\n")) - 1
-			" went to up down
+				" went to up down
 			elseif l:first_line < 1
 				" make first line topmost viewable line
 				let first_line = 0
@@ -495,4 +433,545 @@ function! ParaMenu(prefixless_output, original_metadata)
 	endif
 	" an invalid key series was given, return 0 to indicate this
 	return 0
+endfunction
+
+" =====================================================================
+"  ParaBuffers
+" =====================================================================
+function! ParaBuffers()
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get/set specialkey-to-parabuffer-command mapping
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" Need to know what to do with ParaMenu's special key results
+	if exists("g:ParaBuffersSpecialKeyMap")
+		let l:special_keys_map = g:ParaBuffersSpecialKeyMap
+	else
+		let l:special_keys_map = {-1: "Abort", -2: "UnlistBuffer", -3: "AlternateBuffer", -4: "ForceUnlistBuffer"}
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Gather current buffer information
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" get number of listed buffers
+	let l:number_of_listed_buffers = 0
+	for l:buffer_number in range(1,bufnr("$"))
+		if buflisted(l:buffer_number) " listed buffer, so want to consider it
+			let l:number_of_listed_buffers = l:number_of_listed_buffers + 1
+		endif
+	endfor
+	" ensure at least one listed buffer is found
+	if l:number_of_listed_buffers == 0
+		" no listed buffers, abort
+		echohl WarningMsg
+		echo "No listed buffers."
+		return 1
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Generate output and metadata
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" output to show in ParaMenu
+	let l:output = ""
+	" metadata corresponding with lines in l:output
+	let l:metadata = []
+	" current output line number
+	let l:line_number = 0
+	" map output line number to buffer numbers
+	let l:map_output_buffer_number = {}
+	" loop through all the listed buffers to generate output metadata
+	for l:buffer_number in range(1,bufnr("$"))
+		if buflisted(l:buffer_number) " listed buffer, so want to consider it
+			" get buffer name
+			let l:buffer_name = bufname(l:buffer_number)
+			if l:buffer_name == ""
+				let l:buffer_name = "[No Name]"
+			endif
+			" add buffer name to output
+			if l:output != ""
+				let l:output .= "\n"
+			endif
+			let l:output .= buffer_name
+			" incrememnt line number
+			let l:line_number += 1
+			" map output line number to buffer number
+			let l:map_output_buffer_number[l:line_number] = l:buffer_number
+			" find buffer_attribute information
+			if getbufvar(l:buffer_number,"&mod") " modified buffer
+				let l:metadata += ["+"]
+			elseif bufnr("%") == l:buffer_number " current buffer
+				let l:metadata += ["%"]
+			elseif bufnr("#") == l:buffer_number " alternate buffer
+				let l:metadata += ["#"]
+			else
+				let l:metadata += [" "] " normal buffer
+			endif
+		endif
+	endfor
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Show output and get input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let l:input = ParaMenu(l:output,l:metadata)
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with special keys
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" no request to unlist a buffer (yet), assume any buffer-specific request
+	" is a request to go to that buffer
+	let l:unlist = 0
+	if has_key(l:special_keys_map,l:input)
+		" requested to abort
+		if l:special_keys_map[l:input] == "Abort"
+			return 0
+		elseif l:special_keys_map[l:input] == "AlternateBuffer"
+			" requested to switch to alternate buffer
+			if bufnr("#") != -1
+				" switch to alternate buffer
+				b #
+				return 0
+			else
+				" no listed alternate buffer
+				echohl WarningMsg
+				echo "E23: No alternate file"
+				return 1
+			end
+		elseif l:special_keys_map[l:input] == "UnlistBuffer"
+			" requested to unlist the next inputted buffer
+			let l:unlist = 1
+			" request for which buffer to unlist
+			let l:input = ParaMenu(l:output,l:metadata)
+		elseif l:special_keys_map[l:input] == "ForceUnlistBuffer"
+			" requested to force unlist the next inputted buffer
+			let l:unlist = 2
+			" request for which buffer to force unlist
+			let l:input = ParaMenu(l:output,l:metadata)
+		endif
+	endif
+	" a request to unlist buffer or force unlist buffer gets new input and
+	" will require checking for dealing with special keys again
+	if has_key(l:special_keys_map,l:input)
+		" requested to abort
+		if l:special_keys_map[l:input] == "Abort"
+			return 0
+		elseif l:special_keys_map[l:input] == "AlternateBuffer"
+			" requested alternate buffer - maybe wants to unlist it?
+			if bufnr("#") != -1
+				if l:unlist == 1
+					bd #
+					return 0
+					" or force unlist it
+				elseif l:unlist == 2
+					bd! #
+					return 0
+				endif
+			else
+				" no listed alternate buffer
+				echohl WarningMsg
+				echo "E23: No alternate file"
+				return 1
+			end
+		elseif l:special_keys_map[l:input] == "UnlistBuffer" || l:special_keys_map[l:input] == "ForceUnlistBuffer"
+			" requesting to unlist twice means want to unlist current buffer
+			if l:unlist == 1
+				bd
+				return 0
+			elseif l:unlist == 2
+				bd!
+				return 0
+			end
+		endif
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with selected buffer
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if has_key(l:map_output_buffer_number,l:input)
+		if l:unlist == 0
+			" switch to buffer
+			exe "b " l:map_output_buffer_number[l:input]
+			return 0
+		elseif l:unlist == 1
+			" unlist buffer
+			exe "bd " l:map_output_buffer_number[l:input]
+			return 0
+		elseif l:unlist == 2
+			" force unlist buffer
+			exe "bd! " l:map_output_buffer_number[l:input]
+			return 0
+		endif
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" Uninterpretable input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" inform user malformed input
+	echohl WarningMsg
+	echo "Did not request listed buffer, aborting"
+	return 1
+endfunction
+
+
+" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+"  ParaTagsCtagsFiletype()
+" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+"
+" maps vim's filetype to corresponding ctag's filetype
+
+function! ParaTagsCtagsFiletype(vimfiletype)
+	if a:vimfiletype == "asm"
+		return("asm")
+	elseif a:vimfiletype == "aspperl"
+		return("asp")
+	elseif a:vimfiletype == "aspvbs"
+		return("asp")
+	elseif a:vimfiletype == "awk"
+		return("awk")
+	elseif a:vimfiletype == "beta"
+		return("beta")
+	elseif a:vimfiletype == "c"
+		return("c")
+	elseif a:vimfiletype == "cpp"
+		return("c++")
+	elseif a:vimfiletype == "cs"
+		return("c#")
+	elseif a:vimfiletype == "cobol"
+		return("cobol")
+	elseif a:vimfiletype == "eiffel"
+		return("eiffel")
+	elseif a:vimfiletype == "erlang"
+		return("erlang")
+	elseif a:vimfiletype == "expect"
+		return("tcl")
+	elseif a:vimfiletype == "fortran"
+		return("fortran")
+	elseif a:vimfiletype == "html"
+		return("html")
+	elseif a:vimfiletype == "java"
+		return("java")
+	elseif a:vimfiletype == "javascript"
+		return("javascript")
+	elseif a:vimfiletype == "tex" && g:tex_flavor == "tex"
+		return("tex")
+	" LaTeX is not supported by default, add to ~/.ctags
+	elseif a:vimfiletype == "tex" && g:tex_flavor == "latex"
+		return("latex")
+	elseif a:vimfiletype == "lisp"
+		return("lisp")
+	elseif a:vimfiletype == "lua"
+		return("lua")
+	elseif a:vimfiletype == "make"
+		return("make")
+	elseif a:vimfiletype == "pascal"
+		return("pascal")
+	elseif a:vimfiletype == "perl"
+		return("perl")
+	elseif a:vimfiletype == "php"
+		return("php")
+	elseif a:vimfiletype == "python"
+		return("python")
+	elseif a:vimfiletype == "rexx"
+		return("rexx")
+	elseif a:vimfiletype == "ruby"
+		return("ruby")
+	elseif a:vimfiletype == "scheme"
+		return("scheme")
+	elseif a:vimfiletype == "sh"
+		return("sh")
+	elseif a:vimfiletype == "csh"
+		return("sh")
+	elseif a:vimfiletype == "zsh"
+		return("sh")
+	elseif a:vimfiletype == "slang"
+		return("slang")
+	elseif a:vimfiletype == "sml"
+		return("sml")
+	elseif a:vimfiletype == "sql"
+		return("sql")
+	elseif a:vimfiletype == "tcl"
+		return("tcl")
+	elseif a:vimfiletype == "vera"
+		return("vera")
+	elseif a:vimfiletype == "verilog"
+		return("verilog")
+	elseif a:vimfiletype == "vim"
+		return("vim")
+	elseif a:vimfiletype == "yacc"
+		return("yacc")
+	else
+		return("")
+	endif
+endfunction
+
+" ==============================================================================
+"  ParaTags
+" ==============================================================================
+function! ParaTags()
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get/set specialkey-to-paratags-command mapping
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" Need to know what to do with ParaMenu's special key results
+	if exists("g:ParaBuffersSpecialKeyMap")
+		let l:special_keys_map = g:ParaBuffersSpecialKeyMap
+	else
+		let l:special_keys_map = {-1: "Abort", -2: "TagUnderCursor", -5: "TagUnderCursor", -6: "TagUnderCursor"}
+	endif
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Initial Setup
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" get register information to reset later
+	let l:initial_register = @"
+	" get current word under cursor
+	normal! yaw
+	let l:current_word = @"
+	" reset @" register
+	let @" = initial_register
+	" are we only considering buffer or all listed buffers for tags
+	if exists("g:ParaTagsCurrentBufferOnly")
+		let l:current_buffer_only = g:ParaTagsCurrentBufferOnly
+	else
+		let l:current_buffer_only = 0
+	endif
+	" ctags won't read contents from stdin, has to read from file location for
+	" temporary file
+	if exists("g:ParaTagsTempDir")
+		let l:temporary_file_location = g:ParaTagsTempDir
+	else
+		let l:temporary_file_location = "/tmp"
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get ctags
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" will hold the list of tags as ctags gives them too us
+	let l:tag_list = ""
+	" track whether or not we ran into an unloaded tag
+	let l:unloaded_tag = 0
+	for l:buffer_number in range(1,bufnr("$"))
+		" if we hit a listed buffer and allow any buffers, or if we hit the
+		" current buffer and only can do the current buffer, get ctags for
+		" that buffer
+		if (buflisted(l:buffer_number) && l:current_buffer_only == 0) || (l:current_buffer_only == 1 && l:buffer_number == bufnr("%"))
+			" if the user hasn't loaded the buffer yet, this won't work
+			if bufloaded(l:buffer_number)
+				" determine path for temporary file
+				let l:temporary_file = l:temporary_file_location . "/.paratags-" . getpid() . "-" . bufname(l:buffer_number)
+				" ensure there isn't already a file there, could be a problem
+				if filereadable(l:temporary_file)
+					redraw
+					echo "Looks like temp file " . l:temporary_file . " already exists; Remove and try again"
+					return 1
+				endif
+				" ensure tempfile isn't loaded in another buffer - can happen when canceling with ctrl-c
+				exe "silent! bw! " . l:temporary_file
+				" write temporary file to disk
+				call writefile(getbufline(l:buffer_number,1,"$"),l:temporary_file)
+				" ensure tempfile isn't loaded anymore
+				exe "silent! bw! " . l:temporary_file
+				" get ctag's name for the given filetype
+				let l:ctags_filetype = ParaTagsCtagsFiletype(getbufvar(l:buffer_number,"&filetype"))
+				" get ctags for buffer
+				if l:ctags_filetype == ""
+					" if no ctags_filetype, go by filename
+					let l:tag_list = tag_list . substitute(system("ctags -f - --fields=nk " . l:temporary_file), l:temporary_file, l:buffer_number,"g")
+				else
+					" otherwise, force by ctagsfiletype
+					let l:tag_list = tag_list . substitute(system("ctags -f - --fields=nk --language-force=\"" . l:ctags_filetype . "\" " . l:temporary_file), l:temporary_file, l:buffer_number,"g")
+				endif
+				" remove temporary file
+				call delete(l:temporary_file)
+			else " warn user about unloaded buffer
+				let l:unloaded_tag = 1
+				echohl WarningMsg
+				echo bufname(l:buffer_number) "has not been loaded yet; can't get tags yet."
+			endif
+		endif
+	endfor
+	" Give user chance to read about unloaded buffers
+	if l:unloaded_tag == 1
+		echohl Normal
+		echo "(Press any key to continue)"
+		call getchar()
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Convert ctags to output/metadata
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" this is the information that will be outputted to the user, displaying
+	" information on the tags
+	let l:output = ""
+	" this is the metadata associated with each line
+	let l:metadata = []
+	" current output tag number
+	let l:tag_number = 0
+	" this is the mapping of the number of the tag (ie, what ParaMenu() will
+	" return) and the buffer/line that we will want to jump too
+	let l:tag_buffer_map = {}
+	let l:tag_line_map = {}
+	" this is a map of the number of the tag's text to the number of the tag
+	" it is useful for finding the tag under the cursor
+	let l:text_tag_map = {}
+	" iterate over all of the lines in the tag, parsing each for the data we
+	" want and using it to create the output, metadata, and tag map
+	for l:line in split(l:tag_list,"\n")
+		" break the line up into the five fields it gives
+		" fields are seperated by tabs
+		let l:field_seperator = range(0,5)
+		for l:field_number in range(1,5)
+			let l:field_seperator[l:field_number] = stridx(l:line,"\t",l:field_seperator[l:field_number-1]+1)
+		endfor
+		let l:tag_name = strpart(l:line,0,l:field_seperator[1])
+		let l:buffer_number = strpart(l:line,l:field_seperator[1]+1, l:field_seperator[2] - l:field_seperator[1]-1)
+		let l:regex = strpart(l:line,l:field_seperator[2]+1, l:field_seperator[3] - l:field_seperator[2]-1)
+		let l:ctag_kind = strpart(l:line,l:field_seperator[3]+1, l:field_seperator[4] - l:field_seperator[3]-1)
+		let l:line_number = strpart(l:line,l:field_seperator[4]+6)
+		" append fields to output
+		if l:output != ""
+			let l:output .= "\n"
+		endif
+		let l:output .= bufname(str2nr(l:buffer_number)) . " (" . l:ctag_kind . "):\t" . l:tag_name
+		" incrememnt tag number
+		let l:tag_number += 1
+		" map tag to buffer and line
+		let l:tag_buffer_map[l:tag_number] = l:buffer_number
+		let l:tag_line_map[l:tag_number] = l:line_number
+		let l:text_tag_map[l:tag_name] = l:tag_number
+		" get metadata
+		if getbufvar(l:buffer_number,"&mod") " modified buffer
+			let l:metadata += ["+"]
+		elseif bufnr("%") == l:buffer_number " current buffer
+			let l:metadata += ["%"]
+		elseif bufnr("#") == l:buffer_number " alternate buffer
+			let l:metadata += ["#"]
+		else
+			let l:metadata += [" "] " normal buffer
+		endif
+	endfor
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Show output and get input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let l:input = ParaMenu(l:output,l:metadata)
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with special keys
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if has_key(l:special_keys_map,l:input)
+		" requested to abort
+		if l:special_keys_map[l:input] == "Abort"
+			return 0
+		elseif l:special_keys_map[l:input] == "TagUnderCursor"
+			" wants to jump to tag under cursor
+			if has_key(l:text_tag_map,l:current_word)
+				" jump to buffer
+				exe "b " . l:tag_buffer_map[l:text_tag_map[l:current_word]]
+				" jump to line
+				call cursor(l:tag_line_map[l:text_tag_map[l:current_word]],0)
+				return 0
+			else
+				echohl WarningMsg
+				echo "Cannot find \"" . l:current_word . "\" in the tag list"
+				return 1
+			endif
+		endif
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with selected tag
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if has_key(l:tag_buffer_map,l:input)
+		" jump to buffer
+		exe "b " . l:tag_buffer_map[l:input]
+		" jump to line
+		call cursor(l:tag_line_map[l:input],0)
+		return 0
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" Uninterpretable input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" inform user malformed input
+	echohl WarningMsg
+	echo "Did not request a tag, aborting"
+	return 1
+endfunction
+
+function! ParaQuickFix()
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Get/set specialkey-to-paraquickfix-command mapping
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if exists("g:ParaQuickFixSpecialKeyMap")
+		let l:special_keys_map = g:ParaQuickFixSpecialKeyMap
+	else
+		let l:special_keys_map = {-1: "Abort"}
+	endif
+	" information on the tags
+	let l:output = ""
+	" this is the metadata associated with each line
+	let l:metadata = []
+	" track which quickfix number we're on, to map below
+	let l:quickfix_number = 0
+	" this is the mapping of the number of the quickfix item (ie, what
+	" ParaMenu() will return) and the buffer, line, and column that we will
+	" want to jump too
+	let l:quickfix_buffer_map = {}
+	let l:quickfix_line_map = {}
+	let l:quickfix_column_map = {}
+	" iterate over all of the items in the quickfixlist
+	for l:line in getqflist()
+		" create output for line
+		if l:output != ""
+			let l:output .= "\n"
+		endif
+		let l:output .= bufname(l:line["bufnr"]) . ":\t" . substitute(l:line["text"],"^[\t ]*","","")
+		" get metadata for line
+		if getbufvar(l:line["bufnr"],"&mod") " modified buffer
+			let l:metadata += ["+"]
+		elseif bufnr("%") == l:line["bufnr"] " current buffer
+			let l:metadata += ["%"]
+		elseif bufnr("#") == l:line["bufnr"] " alternate buffer
+			let l:metadata += ["#"]
+		else
+			let l:metadata += [" "] " normal buffer
+		endif
+		" incrememnt quickfix_number
+		let l:quickfix_number+=1
+		" map quickfix item to buffer, line and column
+		let l:quickfix_buffer_map[l:quickfix_number] = l:line['bufnr']
+		let l:quickfix_line_map[l:quickfix_number] = l:line['lnum']
+		let l:quickfix_column_map[l:quickfix_number] = l:line['col']
+	endfor
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Show output and get input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	let l:input = ParaMenu(l:output,l:metadata)
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with special keys
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if has_key(l:special_keys_map,l:input)
+		" requested to abort
+		if l:special_keys_map[l:input] == "Abort"
+			return 0
+		endif
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	"  Deal with selected quickfix item
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if has_key(l:quickfix_buffer_map,l:input)
+		" jump to buffer
+		exe "b " . l:quickfix_buffer_map[l:input]
+		" jump to line
+		call cursor(l:quickfix_line_map[l:input],l:quickfix_column_map[l:input])
+		return 0
+	endif
+
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" Uninterpretable input
+	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" inform user malformed input
+	echohl WarningMsg
+	echo "Did not request a quickfix item, aborting"
+	return 1
 endfunction
