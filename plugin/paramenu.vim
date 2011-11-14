@@ -438,6 +438,7 @@ endfunction
 " =====================================================================
 "  ParaBuffers
 " =====================================================================
+command ParaBuffers call ParaBuffers()
 function! ParaBuffers()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-parabuffer-command mapping
@@ -652,7 +653,7 @@ function! ParaTagsCtagsFiletype(vimfiletype)
 		return("javascript")
 	elseif a:vimfiletype == "tex" && g:tex_flavor == "tex"
 		return("tex")
-	" LaTeX is not supported by default, add to ~/.ctags
+		" LaTeX is not supported by default, add to ~/.ctags
 	elseif a:vimfiletype == "tex" && g:tex_flavor == "latex"
 		return("latex")
 	elseif a:vimfiletype == "lisp"
@@ -705,6 +706,7 @@ endfunction
 " ==============================================================================
 "  ParaTags
 " ==============================================================================
+command ParaTags call ParaTags()
 function! ParaTags()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-paratags-command mapping
@@ -895,6 +897,7 @@ function! ParaTags()
 	return 1
 endfunction
 
+command ParaQuickFix call ParaQuickFix()
 function! ParaQuickFix()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get/set specialkey-to-paraquickfix-command mapping
