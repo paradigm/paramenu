@@ -723,7 +723,7 @@ function! ParaTags()
 	" get register information to reset later
 	let l:initial_register = @"
 	" get current word under cursor
-	normal! yaw
+	normal! yiw
 	let l:current_word = @"
 	" reset @" register
 	let @" = initial_register
