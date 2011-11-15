@@ -38,11 +38,11 @@ fairly standard for Vim plugins:
   and place it within its own folder in the "bundle" directory under your
   vimfiles directory.
 
-On a *nix system without pathogen, the ParaMenu.vim file should be located at:
+On a Unixy system without pathogen, the ParaMenu.vim file should be located at:
 
 	~/.vim/plugin/ParaMenu.vim
 
-On a *nix system with pathogen, the ParaMenu.vim file should be located at:
+On a Unixy system with pathogen, the ParaMenu.vim file should be located at:
 
 	~/.vim/bundle/paramenu/plugin/ParaMenu.vim
 
