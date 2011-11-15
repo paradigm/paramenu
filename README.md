@@ -48,11 +48,11 @@ On a Unixy system with pathogen, the ParaMenu.vim file should be located at:
 
 On a Windows system without pathogen, the ParaMenu.vim file should be located at:
 
-	%USERPROFILE%/vimfiles/plugin/ParaMenu.vim
+	%USERPROFILE%\vimfiles\plugin\ParaMenu.vim
 
 On a Windows system with pathogen, the ParaMenu.vim file should be located at:
 
-	%USERPROFILE%/vimfiles/bundle/paramenu/plugin/ParaMenu.vim
+	%USERPROFILE%\vimfiles\bundle\paramenu\plugin\ParaMenu.vim
 
 Further Documentation
 ---------------------
