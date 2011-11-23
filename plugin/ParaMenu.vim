@@ -118,6 +118,8 @@ function! ParaMenu(prefixless_output, original_metadata)
 		" increment line number counter
 		let l:line_number += 1
 	endfor
+	" replace tabs with single spaces; makes calculating line length and
+	" removing wordwraping later much simpler
 	let l:original_output = substitute(l:original_output,"	"," ","g")
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
