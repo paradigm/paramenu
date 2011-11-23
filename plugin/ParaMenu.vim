@@ -118,6 +118,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 		" increment line number counter
 		let l:line_number += 1
 	endfor
+	let l:original_output = substitute(l:original_output,"	"," ","g")
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Main loop
@@ -131,6 +132,13 @@ function! ParaMenu(prefixless_output, original_metadata)
 	let l:input_length = l:original_input_length
 	" first line of output which is displayed on the first line of the window
 	let l:first_line=0
+	" number of lines to display
+	if &showtabline == 2 || (&showtabline == 1 && tabpagenr("$") > 1)
+		" tab line is a line
+		let l:number_of_lines=&lines-4
+	else
+		let l:number_of_lines=&lines-3
+	endif
 	" regex search pattern.  default to ^^ since it doesn't match anything.
 	let l:search_pattern = "^^"
 	" direction of last search request
@@ -149,43 +157,43 @@ function! ParaMenu(prefixless_output, original_metadata)
 		redraw!
 		" output the output to the screen
 		" iterate over each line in the range which we want to display
-		for l:line in split(l:output,"\n")[l:first_line : l:first_line+&lines-3]
+		for l:line in split(l:output,"\n")[l:first_line : l:first_line+l:number_of_lines]
 			" highlight if line was searched for
 			if l:line[l:input_length+2:] =~ l:search_pattern
 				echohl Search
-				echon l:line . "\n"
+				echon l:line[:&columns-2] . "\n"
 				" highlight if line is comment
 			elseif l:line[0] == "\""
 				echohl Comment
-				echon l:line . "\n"
+				echon l:line[:&columns-2] . "\n"
 				" highlight if current buffer
 			elseif l:line[0] == "#"
 				echohl Statement
-				echon l:line . "\n"
+				echon l:line[:&columns-2] . "\n"
 				" highlight if alterate buffer
 			elseif l:line[0] == "%"
 				echohl MatchParen
-				echon l:line . "\n"
+				echon l:line[:&columns-2] . "\n"
 				" highlight if modified buffer
 			elseif l:line[0] == "+"
 				echohl WarningMsg
-				echon l:line[0:] ."\n"
+				echon l:line[:&columns-2] ."\n"
 				" highlight if line is continuation of previous item
 			elseif l:line[0] == "^"
 				echohl Comment
 				echon l:line[0]
 				echohl Normal
-				echon l:line[1:] ."\n"
+				echon l:line[1:&columns-2] ."\n"
 				" highlight if warning needed
 			elseif l:line[0] == "!"
 				echohl WarningMsg
-				echon l:line[0:] ."\n"
+				echon l:line[:&columns-2] ."\n"
 			else
 				" normal highlighting
 				echohl Identifier
 				echon l:line[0: l:input_length] . " "
 				echohl Normal
-				echon l:line[l:input_length+2:] . "\n"
+				echon l:line[l:input_length+2 : &columns-2] . "\n"
 			end
 		endfor
 		" get input from user
