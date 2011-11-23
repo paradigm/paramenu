@@ -750,13 +750,8 @@ function! ParaTags()
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Initial Setup
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	" get register information to reset later
-	let l:initial_register = @"
 	" get current word under cursor
-	normal! yiw
-	let l:current_word = @"
-	" reset @" register
-	let @" = initial_register
+	let l:current_word = expand("<cword>")
 	" are we only considering buffer or all listed buffers for tags
 	if exists("g:ParaTagsCurrentBufferOnly")
 		let l:current_buffer_only = g:ParaTagsCurrentBufferOnly
