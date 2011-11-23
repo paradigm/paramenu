@@ -13,7 +13,11 @@ function! ParaMenu(prefixless_output, original_metadata)
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get some information we may need to reset later
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	" get cmdheight
 	let l:initial_cmdheight = &cmdheight
+	" get window heights
+	let l:window_heights = []
+	windo :let l:window_heights += [winheight(winnr())]
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Get relevant key lists/dicts
@@ -417,8 +421,10 @@ function! ParaMenu(prefixless_output, original_metadata)
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Reset values we've tinkered with
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	" clean up before exiting
+	" reset cmdheight
 	exe "set cmdheight=".l:initial_cmdheight
+	" reset window heights
+	windo :exec ":resize " . l:window_heights[winnr()-1]
 	redraw!
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	"  Return value
