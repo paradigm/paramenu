@@ -20,7 +20,7 @@ function! ParaMenu(prefixless_output, original_metadata)
 	windo :let l:window_heights += [winheight(winnr())]
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	"  Get relevant key lists/dicts
+	"  Get/set relevant configurable options
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	" Get/Set selection key list
 	" These are the keys used to select an item
@@ -43,6 +43,14 @@ function! ParaMenu(prefixless_output, original_metadata)
 		let l:special_keys = g:ParaMenuNavigationKeys
 	else
 		let l:special_keys = ["\<esc>","\<space>","\<cr>","\<tab>","*"]
+	endif
+	" Get/Set selection key series direction
+	" this sets the order of the generated key series
+	" e.g.: ab vs ba
+	if exists("g:ParaMenuSelectionKeysDirection")
+		let l:selection_keys_direction = g:ParaMenuSelectionKeysDirection
+	else
+		let l:selection_keys_direction = 1
 	endif
 
 	" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -102,13 +110,25 @@ function! ParaMenu(prefixless_output, original_metadata)
 			" map the key series to line number
 			let l:original_map_keyseries_line[key_series]=line_number+1
 			" increment key_counters for next loop
-			let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
-			for l:index in range(len(l:key_counters)-1,0,-1)
-				if l:key_counters[l:index] == len(selection_keys)
-					let l:key_counters[l:index] = 0
-					let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
-				endif
-			endfor
+			if l:selection_keys_direction == 1
+				" increment in arabic-numeral direction (right->left)
+				let l:key_counters[len(l:key_counters)-1] = l:key_counters[len(l:key_counters)-1] + 1
+				for l:index in range(len(l:key_counters)-1,0,-1)
+					if l:key_counters[l:index] == len(selection_keys)
+						let l:key_counters[l:index] = 0
+						let l:key_counters[l:index-1] = l:key_counters[l:index-1] + 1
+					endif
+				endfor
+			else
+				" increment in reverse-arabic-numeral direction (left->right)
+				let l:key_counters[0] = l:key_counters[0] + 1
+				for l:index in range(0,len(l:key_counters)-2)
+					if l:key_counters[l:index] == len(selection_keys)
+						let l:key_counters[l:index] = 0
+						let l:key_counters[l:index+1] = l:key_counters[l:index+1] + 1
+					endif
+				endfor
+			endif
 		endif
 		" add newly prefixed line to output
 		if l:original_output != ""
