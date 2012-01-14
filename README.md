@@ -57,6 +57,6 @@ On a Windows system with pathogen, the ParaMenu.vim file should be located at:
 Further Documentation
 ---------------------
 
-Once installed, further documentation for ParaMenu and it's bundled commands
+Once installed, further documentation for ParaMenu and its bundled commands
 (ParaBuffers, ParaTags and ParaQuickFix) can be viewed by running the command
 ":help ParaMenu.txt"
