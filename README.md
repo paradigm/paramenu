@@ -60,4 +60,4 @@ Once installed, further documentation for ParaMenu and its bundled commands
 (ParaBuffers, ParaTags and ParaQuickFix) can be viewed by running the command
 ":help ParaMenu.txt"
 
-![Alt text](https://encrypted.google.com/images/srpr/logo3w.png)
+![paramenu example](https://raw.github.com/paradigm/paramenu/images/images/paramenu.png)
