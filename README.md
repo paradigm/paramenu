@@ -14,13 +14,12 @@ or cmdline-style (e.g. :ls, :bn, :b) selection.  At the very least, they
 require input to be completed with a <cr> whereas ParaMenu does not. ;)
 
 For each item the user may select, ParaMenu will display a series of keys
-corresponding to that item.  When the user enters those keys, the item will be
-selected.  The series of keys will be as short as possible while still being
-able to uniquely describe each item.
+corresponding to that item.  The user may enter a string from one of these
+items to select it, or enter from the paired series of keys to select it.
 
 ParaMenu is bundled with three commands which utilize this functionality:
-ParaBuffers for managing buffers, ParaTags for managing ctags, and
-ParaQuickFix, an alternate interface for :cwindow.
+ParaBuffers for managing buffers, ParaTags for managing tags, and ParaQuickFix,
+an alternate interface for :cwindow.
 
 Installation
 ------------
@@ -44,7 +43,7 @@ On a Unixy system without pathogen, the ParaMenu.vim file should be located at:
 
 On a Unixy system with pathogen, the ParaMenu.vim file should be located at:
 
-	~/.vim/bundle/paramenu/plugin/ParaMenu.vim
+	~/.vim/bundle/ParaMenu/plugin/ParaMenu.vim
 
 On a Windows system without pathogen, the ParaMenu.vim file should be located at:
 
@@ -52,7 +51,7 @@ On a Windows system without pathogen, the ParaMenu.vim file should be located at
 
 On a Windows system with pathogen, the ParaMenu.vim file should be located at:
 
-	%USERPROFILE%\vimfiles\bundle\paramenu\plugin\ParaMenu.vim
+	%USERPROFILE%\vimfiles\bundle\ParaMenu\plugin\ParaMenu.vim
 
 Further Documentation
 ---------------------

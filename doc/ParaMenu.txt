@@ -6,13 +6,11 @@ ParaMenu
 
 1. Description                                        |ParaMenu-intro|
 2. Usage                                              |ParaMenu-usage|
-3. Navigation                                         |ParaMenu-navigation|
-4. Metadata characters                                |ParaMenu-metadata|
-5. Configuration                                      |ParaMenu-configuration|
-6. Developing for ParaMenu                            |ParaMenu-development|
-7. ParaBuffers                                        |ParaBuffers|
-8. ParaTags                                           |ParaTags|
-9. ParaQuickFix                                       |ParaQuickFix|
+3. Configuration                                      |ParaMenu-configuration|
+4. Developing for ParaMenu                            |ParaMenu-development|
+5. ParaBuffers                                        |ParaBuffers|
+6. ParaTags                                           |ParaTags|
+7. ParaQuickFix                                       |ParaQuickFix|
 
 ==============================================================================
 1. Description                                                *ParaMenu-Intro*
@@ -27,9 +25,8 @@ or cmdline-style (e.g. |:ls|, |:bn|, |:b|) selection.  At the very least,
 they require input to be completed with a <cr> whereas ParaMenu does not. ;)
 
 For each item the user may select, ParaMenu will display a series of keys
-corresponding to that item.  When the user enters those keys, the item will be
-selected.  The series of keys will be as short as possible while still being
-able to uniquely describe each item.
+corresponding to that item.  The user may enter a string from one of these
+items to select it, or enter from the paired series of keys to select it.
 
 ParaMenu is bundled with three commands which utilize this functionality:
 |ParaBuffers| for managing buffers, |ParaTags| for managing ctags, and
@@ -42,124 +39,103 @@ Normally, the end user will not call ParaMenu directly.  Rather, some other
 script (such as |ParaBuffers|, |ParaTags|, and |ParaQuickFix)| will call
 ParaMenu.  When called, ParaMenu will display a list of items. Each item will
 have at least three components:
-1. The very first column may contain a character indicating something special
-   about the item.  For example, it may contain a "%" to indicate the item is
-   somehow related to the current buffer.
-2. The next columns (up until a space) indicate a series of keys the user may
-   enter to select the item.  This may be absent if the item is not selectable
-   (for example, if the item is a comment).
-3. After the second component will be a space.  Everything after this space is
-   used to describe the item itself.  For example, if the calling script is
+1. The very first column(s) (up until a space) indicate a series of keys the
+   user may enter to select the item.  This may be absent if the item is not
+   selectable (for example, if the item is a comment).  Upon entering these
+   keys, they will be shown in the input line at the very bottom between square
+   brackets.  When enough of these have been inputted to uniquely identify a
+   selectable item, the item will be selected.
+1. The next few columns may contain additional information about the item.  For
+   example, it may contain a "%" to indicate the item is somehow related to the
+   current buffer, or it may contain the a filename corresponding to the item.
+   Entering the text for this part does nothing.
+3. The final part will be the item itself.  For example, if the calling script is
    being used to select a buffer, this space will be used to give the buffer's
-   name.
+   name.  Upon entering tect from the item itself, the text will be shown at
+   the very bottom in the input line after the square brackets.  When enough of
+   the item's text has been inputted to uniquely select the item it will be
+   selected.  If multiple items share the same text, the series of keys from
+   the first column(s) can be used to uniquely select one of the items.
 Several examples of lines of ParaMenu's output:
+   0 # ParaMenu.txt
+   ^                Entering "0" will select this item.
+     ^              "#" indicates the item is the alternate buffer
+       ^^^^^^^^^^^^ The item is called "ParaMenu.txt" - entering enough of
+                    "ParaMenu.txt" to uniquely identify this item will select
+                    it.
 
-	+bc ParaMenu.txt
-	^                Metadata indicating the item is unsaved.
-	 ^^              Entering "bc" will select this item.
-	    ^^^^^^^^^^^^ The item is called "ParaMenu.txt".
-	
-	
-	 j cmdline-window
-	^                 There is no metadata for this item.
-	 ^                Entering "j" will select this item.
-	   ^^^^^^^^^^^^^^ The item is called "cmdline-window".
-	
-	
-	"   Functions
-	^             Metadata indicating the item is a comment.
-	 ^^           There is no key series because the item cannot
-	              be selected.
-	    ^^^^^^^^^ The comment is "Functions".
 
-In addition to entering the key series to select an item, the user can use one
-of a list of special keys.  Unlike the key series keys, once ParaMenu sees a
-special key it will immediately return that value to the calling script.  One
-example is <esc>, which may be used to abort.  The actual usage of these
-special keys is up to the calling script.
+   1  cmdline-window
+   ^                 Entering "1" will select this item.
+    ^^               There is no metadata for this item.
+      ^^^^^^^^^^^^^^ The item is called "cmdline-window" - entering enough of
+                     "cmdline-window" to uniquely identify this item will
+                     select it.
+
+
+       Functions
+   ^             There is no key series because the item cannot
+                 be selected.
+     ^           There is no metadata either.
+       ^^^^^^^^^ The comment is "Functions".  Since there is no key series, it
+                 is not selectable.
+
+In addition to selecting an item, the user can use one of a list of special
+keys.  Once ParaMenu sees a special key it will immediately return that value
+to the calling script.  One example is <esc>, which may be used to abort.  The
+actual usage of these special keys is up to the calling script.
 
 The list of items may be to long to display in its entirety in on the screen at
-once.  In addition to selection-keys and special-keys, the user may also input
-keys to navigate the contents of window, search the contents of the window, or
-filter out unwanted items in the window.
+once.  If additional items are available but not displayed, a "..." will be
+shown as the last item.  Future versions of ParaMenu may include a way to
+scroll down to see these items.
 
 ==============================================================================
-3. Navigation                                            *ParaMenu-navigation*
+3. Configuration                                      *ParaMenu-configuration*
 
-A number of key bindings are available for navigating ParaMenu's output.  The
-exact bindings for these navigation commands are configurable, see
-|ParaMenu-configuration|.
-
-Name           Default Binding   Functionality
-------------------------------------------------------------------------------
-ScrollDown     <c-y>             Scrolls window down one line
-ScrollUp       <c-e>             Scrolls window up one line
-PageDown       <c-f>             Scrolls window down one screen
-PageUp         <c-b>             Scrolls window up one screen
-HalfPageDown   <c-d>             Scrolls window down half a screen
-HalfPageUp     <c-u>             Scrolls window up half a screen
-LastLine                         Moves to last line
-FirstLine                        Moves to first line
-LastFirstLine  <c-g>             Moves to last line, unless on last, then moves
-                               to first line
-Search         /                 Searches downward
-BackwardSearch ?                 Searches upward
-ClearSearch    <c-l>             Clears search highlighting
-Filter         <c-r>             Filters out lines from output
-ClearFilter    <c-t>             Returns output to un-filtered state
-
-==============================================================================
-4. Metadata characters                                     *ParaMenu-metadata*
-
-Metadata characters are characters which may be in the first line of an item
-which indicate some attribute of the item.  With the exception of " and ^, they
-are only used within ParaMenu for syntax highlighting.  " and ^ also indicate
-that the item is not selectable, and so ParaMenu will not provide a key series
-to select it.
-
-Character   Meaning
-------------------------------------------------------------------------------
-"           Line is a comment; not selectable.
-^           Line is a continuation of the item above it; for the purposes of
-          selection there is no difference between it and the line above it.
-%           The item is related to the current buffer.
-#           The item is related to the alternate buffer.
-+           The item is related to an unsaved buffer.
-!           The item has some warning or importance related to it.
-{blank}     The item is a normal item with nothing special about it.
-
-==============================================================================
-5. Configuration                                      *ParaMenu-configuration*
-
-There are three groups of keys the user could input to instruct ParaMenu to do
+There are two groups of keys the user could input to instruct ParaMenu to do
 something:
 1. Selection keys, which are used to select an item
-2. Navigation keys, which are used to navigate the output
-3. Special keys, which immediately return their value to the calling function
+2. Special keys, which immediately return their value to the calling function
 All of these keys can be customized by setting a variable in your vimrc.  If
 the variable is absent, ParaMenu will use default values.
 
                                                        *ParaMenuSelectionKeys*
-The selection keys default to the lowercase English letters a-z.  To set them
-to something else, simply set the variable g:ParaMenuSpecialKeys to a list of
-strings, where each string is a single printable and typable character.  For
-example, if you would like to only have to use the qwerty home-row (to make
-ParaMenu act a bit like lustyjuggler), place the following in your vimrc:
+The selection keys default to the digits 0-9.  To set them to something else,
+simply set the variable g:ParaMenuSelectionKeys to a list of strings, where
+each string is a single typable character.  For example, if you would like to
+only have to use the qwerty home-row (to make ParaMenu act a bit like
+lustyjuggler), place the following in your vimrc:
 
-	let g:ParaMenuSelectionKeys = ["a","s","d","f","g","h","j","k","l",";"]
+    let g:ParaMenuSelectionKeys = ["a","s","d","f","g","h","j","k","l",";"]
 
-Note that making this list short means that, if the list of selectable items is
-long, you will have to press more keys.  If you'd prefer to type fewer keys,
-even if they are harder-to-press keys, you could for example set ParaMenu to
-use all of the lowercase and uppercase English letters and the digits 0-9 like
-so:
+Note that these take priority over entering the text of the item to select it,
+and so one could not select a buffer called "faad" by typing the name of the
+buffer, but would rather have to use the selection keys.  As an alternative,
+one could use the ctrl'd version of the selection keys like so:
 
-	let g:ParaMenuSelectionKeys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"]
+    let g:ParaMenuSelectionKeys = ["\<c-a>","\<c-s>","\<c-d>","\<c-f>","\<c-g>","\<c-h>","\<c-j>","\<c-k>","\<c-l>"]
 
-Note that if you try to use non-printable characters (such as <c-h>), the
-output will be messed up and there is no guarantee ParaMenu will function
-properly.
-                                              *ParaMenuSelectionKeysDirection*
+However, since these are not normally printable characters, the output will be
+messed up.  To compensate for this, one will likely have to also set up
+|ParaMenuSelectionKeysDisplay|.  See the relevant section below.
+                                                *ParaMenuSelectionKeysDisplay*
+
+If using no-printable selection keys, it may be advisable to set up alternative
+character(s) to display instead.  This can be done by setting the
+g:ParaMenuSelectionKeysDisplay variable.  Each item will correspond to the item
+in g:ParaMenuSelectionKeys with the same index.  For example, if one is using
+the ctrl'd version of the qwerty homerow keys, this may be a the desired setting:
+
+    let g:ParaMenuSelectionKeysDisplay = ["^A","^S","^D","^F","^G","^H","^J","^K","^L"]
+
+Note that these values are just for the user.  If the user knows that the
+selection keys are all ctrl'd and wants to conserve space, this will work as
+well:
+
+    let g:ParaMenuSelectionKeysDisplay = ["A","S","D","F","G","H","J","K","L"]
+
+                                                  *ParaMenuSelectionDirection*
 By default, the key sequence is generated by iterating through all of the
 values in the right-most item in the key series, then it increments the item to
 the left and reverts the right-most to the first value.  This is quite simlar
@@ -167,126 +143,92 @@ the arabic numeral system.  For example, if the key series is ["0","1"], and
 there are four selectable items, the key series  will be generated in the
 following order:
 
-	00
-	01
-	10
-	11
+    00
+    01
+    10
+    11
 
 However, if you would like, you can reverse the direction by setting the
-variable g:ParaMenuSelectionKeysDirection to -1.  You can do so by placing the
+variable g:ParaMenuSelectionDirection to 1.  You can do so by placing the
 following in your vimrc:
 
-	let g:ParaMenuSelectionKeysDirection = -1
+    let g:ParaMenuSelectionDirection = 1
 
 If you do so, the key series example given above will be generated in the
 following order:
 
-	00
-	10
-	01
-	11
-
-                                                      *ParaMenuNavigationKeys*
-The default navigation keys can be found in |ParaMenu-navigation|.  If you
-would like to use non-defaults, set the variable g:ParaMenuNavigationKeys to a
-dictionary pairing a string representing the key you would like to use with the
-name of the functionality you would like, as described in
-|ParaMenu-navigation|.  For example, if you would like to explicitly set the
-defaults, place the following in your vimrc:
-
-	let g:ParaMenuNavigationKeys = {"\<c-y>": "ScrollUp", "\<c-e>": "ScrollDown", "\<c-f>": "PageDown", "\<c-b>": "PageUp", "\<c-d>": "HalfPageDown", "\<c-u>": "HalfPageUp", "/": "Search", "?": "BackwardSearch", "\<c-r>": "Filter", "\<c-t>": "ClearFilter", "\<c-n>": "SearchNext", "\<c-p>": "SearchPrevious", "\<c-l>": "ClearSearch", "\<c-g>": "LastFirstLine"}
-
-Note that unlike with selection keys, there should be no problem using
-non-printable values for navigation keys so long as Vim recognizes them.  To
-test, try the following out:
-
-	:echo nr2char(getchar()) == "\<c-h>"
-
-and enter ctrl-h.  You should see a "1" echoed back.  Feel free to replace the
-quoted section with whatever you would like to be used.  So long as you get a
-"1" back when you run that command and type the value you want to trigger it,
-it should be safe for ParaMenu.
+    00
+    10
+    01
+    11
 
                                                          *ParaMenuSpecialKeys*
-Finally, the special keys can also be customized.  To do so, set the variable
+The special keys can also be customized.  To do so, set the variable
 g:ParaMenuSpecialKeys to a list of strings representing the key you would like
-to use.  You can use the same :echo command as used above in
-|ParaMenuNavigationKeys| to find a valid key description for navigation keys to
-find a value for special keys.  To explicitly set the default, place the
-following in your vimrc:
+to use.  To explicitly set the default, place the following in your vimrc:
 
-	let g:ParaMenuSpecialKeys = ["\<esc>","\<space>","\<cr>","\<tab>","*"]
+    let g:ParaMenuSpecialKeys = ["\<esc>","\<cr>","\<tab>"]
 
 The order, combined with the settings for whatever is calling ParaMenu, will
 indicate what each key does.  It is recommended to leave <esc> as the first
 value so that any script calling ParaMenu can use that to abort.
 
 ==============================================================================
-6. Developing for ParaMenu                              *ParaMenu-development*
+4. Developing for ParaMenu                              *ParaMenu-development*
 
 Developing a script to utilize ParaMenu is relatively simple.  ParaMenu itself
-is just a function with two arguments.
-1. The first argument is a string containing the list of items you would like
-   displayed.  This will be referred to as "output."
-2. The second argument is a list of one-character strings indicating the
-   attributes of each line of output.  See |ParaMenu-metadata|.  Note that
-   there should be exactly as many items in this list as there are lines in
-   the output.  This list will be referred to as "metadata."
+is just a function with one argument: a list containing the items to be
+selected.  Each item is itself a list containing the various information
+required by ParaMenu for the corresponding item.
+1. The first item in the list is the string to be displayed/selected.  For
+   example, if the you want the user to select a buffer from a list of buffers,
+   this would be the name of the buffer.
+2. The second item is a string containing the metadata you would like displayed
+   for the item.  For example, "%" could be used to indicate the item is somehow
+   related to the current buffer.
+3. The third item is the highlighting group name to color the item with.  If
+   left as an empty string (""), ParaMenu will default to the default color.
+4. The last item is should be a 0 or a 1 indicating whether or not the item is
+   selectable..  If it is a 0, the item will not be selectable and if it is a 1
+   the item will be selectable.  This is useful if some comment should be given
+   for items.
 
 ParaMenu will return one of the following:
-1. A number relating the line in output (and the item in metadata)
-   corresponding to what the user selected.  These values will all be positive;
-   the first line is 1.
-2. A negative number relating to the special key pressed.  If the first value
-   from g:ParaMenuSpecialKeys - or the first value in the default special
-   keys - is pressed by the user, ParaMenu will return -1.  For the second,
-   ParaMenu will return -2, etc.
-3. If no valid item was selected and no valid special key was pressed, ParaMenu
-   will return a 0.
+1. If the user selected an item, Paramenu will return the index of the item.
+   This will be a non-negative number.
+2. If the user inputs a special key, a negative number is returned.  If the
+   first value from g:ParaMenuSpecialKeys - or the first value in the default
+   special keys - is pressed by the user, ParaMenu will return -1.  For the
+   second, ParaMenu will return -2, etc.
 
-A general structure you can use follows:
-1. Gather needed information to generate output and metadata
-2. Generate (a) output, (b) metadata, and (c) some mapping between the values
-   which ParaMenu will return and what you want to do with respect to them.
-   For example, if you're making a script to switch to a buffer, you should map
-   each value ParaMenu could return to the buffer number you would like to
-   switch to if selected.
-3. Call ParaMenu:  "let input = ParaMenu(output, metadata)"
-4. Make a if/elseif/endif block for each possible special key value returned
-5. Deal with a valid returned value for a selected item
-6. Depending on the script you are making, you may now need to re-run steps 2-6.
-7. If successfully used a special or selected value, return
-8. Otherwise, indicate to the user that he or she inputted some value you can't
-   use and return
-
-Additionally, I recommend allowing the user create a global variable in his or
-her vimrc which maps the special key return values (-1, -2, etc) to some string
+I recommend allowing the user create a global variable in his or her vimrc
+which maps the special key return values (-1, -2, etc) to some string
 indicating what your script should do with it.  For example, |ParaBuffers| uses
 the following code:
 
-	if exists("g:ParaBuffersSpecialKeyMap")
-		let l:special_keys_map = g:ParaBuffersSpecialKeyMap
-	else
-		let l:special_keys_map = {-1: "Abort", -2: "UnlistBuffer", -3: "AlternateBuffer", -4: "ForceUnlistBuffer"}
-	endif
+    if exists("g:ParaBuffersSpecialKeyMap")
+        let l:special_keys_map = g:ParaBuffersSpecialKeyMap
+    else
+        let l:special_keys_map = {-1: "Abort", -2: "AlternateBuffer", -3: "UnlistBuffer"}
+    endif
 
 The advantage of this system is that the user can chose to have multiple
 scripts which can share the same special keys without worry that they will
 overlap with user-set selection or navigation keys.
 
 ==============================================================================
-7. ParaBuffers                                                   *ParaBuffers*
+5. ParaBuffers                                                   *ParaBuffers*
 
 ParaBuffers is a script used to switch to or unlist |buffers| which uses
 ParaMenu for its user interface.  It can be run using
 
-	:ParaBuffers
+    :ParaBuffers
 
 If you would like to make this more accessible (which is recommended), feel
 free to map it to something.  For example, to map it to <f2>, you can place the
 following in your vimrc:
 
-	nnoremap <f2> :ParaBuffers<cr>
+    nnoremap <f2> :ParaBuffers<cr>
 
 When run, ParaBuffers will display a list of buffers with some associated
 metadata (specifically, whether the buffer is the current buffer, the alternate
@@ -298,107 +240,82 @@ ParaBuffers recognizes the following special keys:
 Name              Key Value       Key              Functionality
 ------------------------------------------------------------------------------
 Abort             -1              <esc>            Aborts ParaBuffers
-UnlistBuffer      -2              <space>          Unlists a buffer
-AlternateBuffer   -3              <cr>             Selects alternate buffer
-ForceUnlistBuffer -4              <tab>            Force unlists a buffer
+AlternateBuffer   -2              <cr>             Selects alternate buffer
+UnlistBuffer      -3              <tab>            Unlists a buffer
 
 To customize which special key value is paired with what functionality, set the
 variable g:ParaBuffersSpecialKeyMap as a dictionary pairing the special key
 value to the name in the above table.  For example, to explicitly set the
 default:
 
-	let g:ParaBuffersSpecialKeyMap = {-1: "Abort", -2: "UnlistBuffer", -3: "AlternateBuffer", -4: "ForceUnlistBuffer"}
-
-To set the key associated with the key value, see |ParaMenuNavigationKeys|.
+    let g:ParaBuffersSpecialKeyMap = {-1: "Abort", -2: "AlternateBuffer", -3: "UnlistBuffer"}
 
 If Abort is given, ParaBuffers aborts immediately without changing buffers.  If
 AlternateBuffer is given, ParaBuffers will switch you to the alternate buffer
-(equivilent to hitting |ctrl-6|).  If UnlistBuffer is given, followed by a key
-series for a buffer, that buffer is unlisted.  If UnlistBuffer is followed by
-UnlistBuffer (or ForceUnlistBuffer), the current buffer is unlisted.  If
-UnlistBuffer is followed by the alternate buffer, the alternate buffer is
-unlisted.  ForceUnlistBuffer acts like UnlistBuffer, except it forces the
-buffer to be unlisted even if it has been modified since last saved.
+(equivilent to hitting |ctrl-6|).  If UnlistBuffer is given, the buffer the
+user selects will be unlisted.  If UnlistBuffer is given twice, the current
+buffer is unlisted.
 
 ==============================================================================
-8. ParaTags                                                         *ParaTags*
+6. ParaTags                                                         *ParaTags*
 
 ParaTags is a script used to jump to |ctags| which uses ParaMenu for its user
 interface. It can be run using
 
-	:ParaTags
+    :ParaTags
 
 If you would like to make this more accessible (which is recommended), feel
 free to map it to something.  For example, to map it to <f3>, you can place the
 following in your vimrc:
 
-	nnoremap <f3> :ParaTags<cr>
+    nnoremap <f3> :ParaTags<cr>
 
-ParaTags requires the exuberant-ctags to be installed.  When run, ParaTags will
-display a list of tags as determined by ctags across all of your open buffers.
-Each tag will be paired with metadata describing the buffer it is in, noting
-whether the buffer is the current buffer, the alternate buffer, or a modified
-buffer.  Additionally, each tag will have a series of keys by it.  When these
-keys are entered, ParaTags will jump the cursor to the corresponding line in
-the corresponding buffer.  Additionally, ParaTags recognizes the following
-special keys:
+When run, ParaTags will display a list of tags from which the user can select
+one, at which point vim will jump to the corresponding line and column in the
+corresponding buffer for that tag.
+
+ParaTags can automatically generate tags for the current buffers by setting
+g:ParaTagsAutoCreate to 1:
+
+   let g:ParaTagsAutoCreate = 1
+
+This will use exuberant-ctags to generate a temporary tagfile for all of the
+buffers based on vim's guess of the buffers' filetype on the fly when ParaTags
+is called.  Otherwise, ParaTags will simple use the currently available tags.
+
+ParaTags recognizes the following special keys:
 
                   Default Special Default Special
 Name              Key Value       Key              Functionality
 ------------------------------------------------------------------------------
 Abort             -1              <esc>            Aborts ParaTags
-TagUnderCurosr    -2, -5          <space>, *       Jumps to definition of item
-                                                 under cursor
+NextTag           -2,             <cr>             Runs |:tn|
+PreviousTag       -3,             <tab>            Runs |:tp|
 
 To customize which special key value is paired with what functionality, set the
 variable g:ParaTagsSpecialKeyMap as a dictionary pairing the special key
 value to the name in the above table.  For example, to explicitly set the
 default:
 
-	let g:ParaTagsSpecialKeyMap = {-1: "Abort", -2: "TagUnderCursor", -5: "TagUnderCursor"}
-
-To set the key associated with the key value, see |ParaMenuNavigationKeys|.
-
-Entering Abort will abort ParaTags without jumping to a tag.  If TagUnderCursor
-is given, ParaTags will jump to the definition of the word under the cursor if
-a tag for it can be found.
+    let g:ParaTagsSpecialKeyMap = {-1: "Abort", -2: "NextTag", -3: "PreviousTag"}
 
 ==============================================================================
-9. ParaQuickFix                                                 *ParaQuickFix*
+7. ParaQuickFix                                                 *ParaQuickFix*
 
 ParaTags is a script used as an alternate interface to the |quickfix| window,
 which uses ParaMenu as a user interface.  It can be run using
 
-	:ParaQuickFix
+    :ParaQuickFix
 
 If you would like to make this more accessible (which is recommended), feel
 free to map it to something.  For example, to map it to <f4>, you can place the
 following in your vimrc:
 
-	nnoremap <f4> :ParaQuickFix<cr>
+    nnoremap <f4> :ParaQuickFix<cr>
 
-When run, ParaQuickFix will display the current quickfix items.  Each tag will
-be paired with metadata describing the buffer it is in, noting whether the
-buffer is the current buffer, the alternate buffer, or a modified buffer.
-Additionally, each item will have a series of keys by it.  When these keys are
-entered, ParaQuickFix will jump the cursor to the corresponding line and column
-in the corresponding buffer.  Additionally, ParaQuickFix recognizes the following
-special key:
-
-                  Default Special Default Special
-Name              Key Value       Key              Functionality
-------------------------------------------------------------------------------
-Abort             -1              <esc>            Aborts ParaQuickFix
-
-To customize which special key value is paired with Abort, set the variable
-g:ParaQuickFixSpecialKeyMap as a dictionary pairing the special key value to
-Abort.  For example, to explicitly set the default:
-
-	let g:ParaQuickFixSpecialKeyMap = {-1: "Abort"}
-
-To set the key associated with the key value, see |ParaMenuNavigationKeys|.
-
-Entering Abort will abort ParaQuickFix without jumping to a quickfix item.
+When run, ParaQuickFix will display the current quickfix items.  Selecting the
+item will jump to the corresponding line and column in the corresponding
+buffer.  Pressing any special key will abort without jumping to a quickfix item.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:
