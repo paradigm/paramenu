@@ -1,3 +1,4 @@
+" paramenu v 2
 function! ParaMenu(items)
 	" a:items is a list of items the calling function wants the user to choose
 	" from.  Each item in the list is a list containing:
