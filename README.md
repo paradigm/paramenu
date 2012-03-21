@@ -17,6 +17,14 @@ For each item the user may select, ParaMenu will display a series of keys
 corresponding to that item.  The user may enter a string from one of these
 items to select it, or enter from the paired series of keys to select it.
 
+For example, see the following image:
+![paramenu example](https://raw.github.com/paradigm/paramenu/images/images/paramenu.png)
+The user may select one of the three open buffers: .bashrc, .zshrc, and .vimrc.
+This can be done by either entering the values in the left-most column (here,
+either "0", "1" or "2") to select an item or entering a unique part of the
+item's text (for example, "z" is unique to .zshrc and will select it, but "rc"
+is not unique to any of the files and will not select any of them.
+
 ParaMenu is bundled with three commands which utilize this functionality:
 ParaBuffers for managing buffers, ParaTags for managing tags, and ParaQuickFix,
 an alternate interface for :cwindow.
@@ -59,5 +67,3 @@ Further Documentation
 Once installed, further documentation for ParaMenu and its bundled commands
 (ParaBuffers, ParaTags and ParaQuickFix) can be viewed by running the command
 ":help ParaMenu.txt"
-
-![paramenu example](https://raw.github.com/paradigm/paramenu/images/images/paramenu.png)
